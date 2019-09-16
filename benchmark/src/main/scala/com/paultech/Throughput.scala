@@ -20,7 +20,10 @@ object Throughput {
     env.setParallelism(parallelism)
 
     val datasource = KafkaSourceUtil.getKafkaSource(args)
-//    datasource.setStartFromEarliest()
+
+    if (parameterTool.has("startFromEarliest")) {
+        datasource.setStartFromEarliest()
+    }
 
     val stream: DataStream[String] = env.addSource(datasource)
 
