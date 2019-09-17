@@ -16,7 +16,7 @@ public class KafkaDataSource {
 
     public static int numOfThreads = 4;
     public static void main(String[] args) {
-        KafkaConfig kafkaConfig = new KafkaConfig();
+        KafkaProducerConfig kafkaProducerConfig = new KafkaProducerConfig();
 
         CommandLineOpt commandLineOpt = CommandLineOpt.parseCommandLine(args);
 
@@ -24,13 +24,13 @@ public class KafkaDataSource {
 
         numOfThreads = commandLineOpt.getNumberOfThreads();
 
-        kafkaConfig.setBootstrapServer(commandLineOpt.getBootstrapServers());
-        kafkaConfig.setTopic(commandLineOpt.getTopic());
-        kafkaConfig.setAcks(commandLineOpt.getAcks());
-        Properties properties = kafkaConfig.toProperties();
+        kafkaProducerConfig.setBootstrapServer(commandLineOpt.getBootstrapServers());
+        kafkaProducerConfig.setTopic(commandLineOpt.getTopic());
+        kafkaProducerConfig.setAcks(commandLineOpt.getAcks());
+        Properties properties = kafkaProducerConfig.toProperties();
 
 
-        List<ProducerThread> producerThreadList = generateProducerThread(properties, numOfThreads, kafkaConfig.getTopic());
+        List<ProducerThread> producerThreadList = generateProducerThread(properties, numOfThreads, kafkaProducerConfig.getTopic());
         ExecutorService executorService = Executors.newFixedThreadPool(numOfThreads);
         for (ProducerThread producerThread : producerThreadList) {
             executorService.submit(producerThread);

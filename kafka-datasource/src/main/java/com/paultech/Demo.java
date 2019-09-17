@@ -1,18 +1,22 @@
 package com.paultech;
 
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.utils.Utils;
 
+import java.util.Arrays;
 import java.util.Properties;
 import java.util.UUID;
 
 public class Demo {
     public static void main(String[] args) {
-        KafkaConfig kafkaConfig = new KafkaConfig();
+        /*KafkaProducerConfig kafkaProducerConfig = new KafkaProducerConfig();
 
-        kafkaConfig.setBootstrapServer("10.180.210.187:6667");
-        Properties properties = kafkaConfig.toProperties();
+        kafkaProducerConfig.setBootstrapServer("10.180.210.187:6667");
+        Properties properties = kafkaProducerConfig.toProperties();
         KafkaProducer<String, String> kafkaProducer = new KafkaProducer<>(properties);
 
         String msg = System.currentTimeMillis() + " " + UUID.randomUUID().toString();
@@ -21,6 +25,30 @@ public class Demo {
         kafkaProducer.send(stringStringProducerRecord);
         kafkaProducer.flush();
 
-        kafkaProducer.close();
+        kafkaProducer.close();*/
+
+        kafkaConsumer();
+    }
+
+    public static void kafkaConsumer() {
+        Properties props = new Properties();
+        props.put("bootstrap.servers", "10.180.210.187:6667,10.180.210.188:6667,10.180.210.189:6667");
+        props.put("group.id", "group-1");
+        props.put("enable.auto.commit", "true");
+        props.put("auto.commit.interval.ms", "1000");
+        props.put("auto.offset.reset", "earliest");
+        props.put("session.timeout.ms", "30000");
+        props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+
+        KafkaConsumer<String, String> kafkaConsumer = new KafkaConsumer<>(props);
+        kafkaConsumer.subscribe(Arrays.asList("output1"));
+        while (true) {
+            ConsumerRecords<String, String> records = kafkaConsumer.poll(100);
+            for (ConsumerRecord<String, String> record : records) {
+                System.out.printf("offset = %d, value = %s", record.offset(), record.value());
+                System.out.println();
+            }
+        }
     }
 }

@@ -14,8 +14,9 @@ object Latency {
     env.setParallelism(parallelism)
 
     val kafkaSource = KafkaSourceUtil.getKafkaSource(args)
+    val kafkaSink = KafkaSinkUtil.getKafkaSink(args)
 
-    val dataStream = env.addSource(kafkaSource)
+    val dataStream = env.addSource(kafkaSource).name("kafka-source")
 
     dataStream.map(new MapFunction[String, String] {
       override def map(t: String): String = {
@@ -23,11 +24,8 @@ object Latency {
         val processingTime = System.currentTimeMillis().toString
         s"$eventTime $processingTime"
       }
-    })
-
-    val kafkaSink = KafkaSinkUtil.getKafkaSink(args)
-
-    dataStream.addSink(kafkaSink)
+    }).name("latency-map")
+      .addSink(kafkaSink).name("kafka-sink")
 
     env.execute("Latency Job")
   }

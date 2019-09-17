@@ -148,6 +148,11 @@
           <version>${scala.version}</version>
           <scope>compile</scope>
         </dependency>
+        <dependency>
+          <groupId>org.apache.flink</groupId>
+          <artifactId>flink-table-common</artifactId>
+          <version>${flink.version}</version>
+        </dependency>
       </dependencies>
     </profile>
   </profiles>
@@ -170,36 +175,12 @@
       <scope>provided</scope>
       <exclusions>
         <exclusion>
-          <artifactId>flink-core</artifactId>
-          <groupId>org.apache.flink</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>flink-java</artifactId>
-          <groupId>org.apache.flink</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>flink-shaded-asm</artifactId>
-          <groupId>org.apache.flink</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>flink-shaded-asm-6</artifactId>
-          <groupId>org.apache.flink</groupId>
-        </exclusion>
-        <exclusion>
           <artifactId>scala-reflect</artifactId>
           <groupId>org.scala-lang</groupId>
         </exclusion>
         <exclusion>
           <artifactId>scala-compiler</artifactId>
           <groupId>org.scala-lang</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>flink-shaded-guava</artifactId>
-          <groupId>org.apache.flink</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>jsr305</artifactId>
-          <groupId>com.google.code.findbugs</groupId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -210,10 +191,6 @@
       <scope>provided</scope>
       <exclusions>
         <exclusion>
-          <artifactId>flink-streaming-java_2.11</artifactId>
-          <groupId>org.apache.flink</groupId>
-        </exclusion>
-        <exclusion>
           <artifactId>scala-reflect</artifactId>
           <groupId>org.scala-lang</groupId>
         </exclusion>
@@ -221,16 +198,18 @@
           <artifactId>scala-compiler</artifactId>
           <groupId>org.scala-lang</groupId>
         </exclusion>
-        <exclusion>
-          <artifactId>jsr305</artifactId>
-          <groupId>com.google.code.findbugs</groupId>
-        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
       <groupId>org.scala-lang</groupId>
       <artifactId>scala-library</artifactId>
       <version>2.11.12</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.flink</groupId>
+      <artifactId>flink-table-common</artifactId>
+      <version>1.8.1</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

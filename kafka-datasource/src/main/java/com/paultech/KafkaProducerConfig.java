@@ -2,7 +2,7 @@ package com.paultech;
 
 import java.util.Properties;
 
-public class KafkaConfig {
+public class KafkaProducerConfig {
     private String bootstrapServer;
     private String topic;
     private String acks = "all";

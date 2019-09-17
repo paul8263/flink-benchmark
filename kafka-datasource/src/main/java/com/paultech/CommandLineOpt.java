@@ -2,8 +2,6 @@ package com.paultech;
 
 import org.apache.commons.cli.*;
 
-import java.util.Properties;
-
 public class CommandLineOpt {
 
     public static final String BOOTSTRAP_SERVERS = "bootstrapServers";
@@ -50,10 +48,10 @@ public class CommandLineOpt {
 
     private static Options buildOptions() {
         Options options = new Options();
-        options.addOption(BOOTSTRAP_SERVERS, true, "Bootstrap Servers");
-        options.addOption(TOPIC, true, "Topic");
-        options.addOption(ACKS, true, "Acks");
-        options.addOption(NUMBER_OF_THREADS, true, "Number of threads");
+        options.addOption("b", BOOTSTRAP_SERVERS, true, "Bootstrap Servers");
+        options.addOption("t", TOPIC, true, "Topic");
+        options.addOption("a", ACKS, true, "Acks");
+        options.addOption("n", NUMBER_OF_THREADS, true, "Number of threads");
         return options;
     }
 

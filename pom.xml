@@ -11,6 +11,7 @@
     <modules>
         <module>kafka-datasource</module>
         <module>benchmark</module>
+        <module>kafka-latency-analyzer</module>
     </modules>
 
     <build>
