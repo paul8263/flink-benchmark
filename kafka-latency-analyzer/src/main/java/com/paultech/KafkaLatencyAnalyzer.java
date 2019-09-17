@@ -28,7 +28,7 @@ public class KafkaLatencyAnalyzer {
         Properties properties = new KafkaConsumerConfig(latencyCommandOpt).toProperties();
         LOGGER.info(properties.toString());
 
-        histogram = new Histogram(new UniformReservoir(9999999));
+        histogram = new Histogram(new UniformReservoir());
 
         ExecutorService executorService = Executors.newFixedThreadPool(NUMBER_OF_ANALYZER);
 
