@@ -25,10 +25,10 @@ mvn clean package
 ./bin/flink run -m 10.180.210.187:8081 -c com.paultech.Latency /root/zy/benchmark/benchmark-1.0-SNAPSHOT.jar --parallelism 12 --output-topic output --input-topic input --bootstrap-server 10.180.210.187:6667,10.180.210.188:6667,10.180.210.189:6667
 
 # Run Word Count
-./bin/flink run -m 10.180.210.187:8081 -c com.paultech.WordCount /root/zy/benchmark/benchmark-1.0-SNAPSHOT.jar --parallelism 12 --output hdfs:///output.txt --input input hdfs:///input.txt
+./bin/flink run -m 10.180.210.187:8081 -c com.paultech.WordCount /root/zy/benchmark/benchmark-1.0-SNAPSHOT.jar --parallelism 12 --output hdfs:///output.txt --input hdfs:///input.txt
 
 # Run Table SQL
-./bin/flink run -m 10.180.210.187:8081 -c com.paultech.TableSQL /root/zy/benchmark/benchmark-1.0-SNAPSHOT.jar --parallelism 12 --output hdfs:///output.csv --input input hdfs:///input.csv
+./bin/flink run -m 10.180.210.187:8081 -c com.paultech.TableSQL /root/zy/benchmark/benchmark-1.0-SNAPSHOT.jar --parallelism 12 --output hdfs:///output.csv --input hdfs:///input.csv
 ```
 
 # How to run Kafka datasource
