@@ -19,11 +19,11 @@ object WordCount {
 
     val source = env.readTextFile(input)
 
-    source
+    source.name("Word-count-source")
       .map((_, 1))
       .groupBy(0)
       .sum(1)
-      .writeAsText(output)
+      .writeAsText(output).name("word-count-sink").setParallelism(1)
 
     env.execute("Word Count Job")
   }
