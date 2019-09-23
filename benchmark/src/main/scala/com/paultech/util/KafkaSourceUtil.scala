@@ -11,7 +11,7 @@ object KafkaSourceUtil {
     val parameterTool = ParameterTool.fromArgs(args)
     val bootstrapServer = parameterTool.get("bootstrap-server", "10.180.210.187:6667")
     val sourceKafkaTopic = parameterTool.get("input-topic", "test")
-    val properties = new Properties();
+    val properties = new Properties()
     properties.setProperty("bootstrap.servers", bootstrapServer)
     properties.setProperty("group.id", "flink-bench")
     new FlinkKafkaConsumer[String](sourceKafkaTopic, new SimpleStringSchema(), properties)

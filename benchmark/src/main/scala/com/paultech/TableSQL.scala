@@ -2,12 +2,11 @@ package com.paultech
 
 import org.apache.flink.api.common.typeinfo.TypeInformation
 import org.apache.flink.api.java.utils.ParameterTool
-import org.apache.flink.api.scala.ExecutionEnvironment
+import org.apache.flink.api.scala.{ExecutionEnvironment, _}
 import org.apache.flink.table.api.scala.BatchTableEnvironment
 import org.apache.flink.table.sinks.CsvTableSink
 import org.apache.flink.table.sources.CsvTableSource
-import org.apache.flink.api.scala._
-import org.slf4j.{Logger, LoggerFactory}
+import org.slf4j.LoggerFactory
 
 object TableSQL {
   def main(args: Array[String]): Unit = {
