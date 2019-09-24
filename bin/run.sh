@@ -3,8 +3,6 @@
 . ./functions.sh
 . ./benchmark-env.sh
 
-CURRENT_DIR=$(cd `dirname $0`; pwd)
-
 welcome
 set_java_command
 validate_flink_home
@@ -19,25 +17,25 @@ read -p "Please input your choice(0 to exit): " CHOICE
 
 case "$CHOICE" in
 "1")
-run_kafka_datasource
-;;
+  run_kafka_datasource
+  ;;
 
 "2")
-run_benchmark
-;;
+  run_benchmark
+  ;;
 
 "3")
-run_kafka_latency_analyzer
-;;
+  run_kafka_latency_analyzer
+  ;;
 
 "0")
-echo "Bye"
-exit 0
-;;
+  echo "Bye"
+  exit 0
+  ;;
 
 *)
-echo "Invalid choice"
-exit -1
-;;
+  echo "Invalid choice"
+  exit -1
+  ;;
 
 esac
