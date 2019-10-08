@@ -103,7 +103,7 @@ run_benchmark() {
     read -p "Output topic: " OUTPUT_TOPIC
     read -p "Parallelism: " PARALLELISM
 
-    $FLINK_HOME -m $FLINK_JOB_Manager -d -c $FLINK_CLASS $FLINK_JOB_JAR_PATH --parallelism $PARALLELISM --input-topic $INPUT_TOPIC --output-topic $OUTPUT_TOPIC --bootstrap-server $BOOTSTRAP_SERVER
+    ${FLINK_HOME}/bin/flink -m $FLINK_JOB_Manager -d -c $FLINK_CLASS $FLINK_JOB_JAR_PATH --parallelism $PARALLELISM --input-topic $INPUT_TOPIC --output-topic $OUTPUT_TOPIC --bootstrap-server $BOOTSTRAP_SERVER
     ;;
   "2")
     FLINK_CLASS="com.paultech.Latency"
@@ -113,7 +113,7 @@ run_benchmark() {
     read -p "Output topic: " OUTPUT_TOPIC
     read -p "Parallelism: " PARALLELISM
 
-    $FLINK_HOME -m $FLINK_JOB_Manager -d -c $FLINK_CLASS $FLINK_JOB_JAR_PATH --parallelism $PARALLELISM --input-topic $INPUT_TOPIC --output-topic $OUTPUT_TOPIC --bootstrap-server $BOOTSTRAP_SERVER
+    ${FLINK_HOME}/bin/flink -m $FLINK_JOB_Manager -d -c $FLINK_CLASS $FLINK_JOB_JAR_PATH --parallelism $PARALLELISM --input-topic $INPUT_TOPIC --output-topic $OUTPUT_TOPIC --bootstrap-server $BOOTSTRAP_SERVER
     ;;
   "3")
     FLINK_CLASS="com.paultech.WordCount"
@@ -122,7 +122,7 @@ run_benchmark() {
     read -p "Output file: " OUTPUT_FILE
     read -p "Parallelism: " PARALLELISM
 
-    $FLINK_HOME -m $FLINK_JOB_Manager -d -c $FLINK_CLASS $FLINK_JOB_JAR_PATH --parallelism $PARALLELISM --input $INPUT_FILE --output $OUTPUT_FILE
+    ${FLINK_HOME}/bin/flink -m $FLINK_JOB_Manager -d -c $FLINK_CLASS $FLINK_JOB_JAR_PATH --parallelism $PARALLELISM --input $INPUT_FILE --output $OUTPUT_FILE
     ;;
   "4")
     FLINK_CLASS="com.paultech.TableSQL"
@@ -131,7 +131,7 @@ run_benchmark() {
     read -p "Output file: " OUTPUT_FILE
     read -p "Parallelism: " PARALLELISM
 
-    $FLINK_HOME -m $FLINK_JOB_Manager -d -c $FLINK_CLASS $FLINK_JOB_JAR_PATH --parallelism $PARALLELISM --input $INPUT_FILE --output $OUTPUT_FILE
+    ${FLINK_HOME}/bin/flink -m $FLINK_JOB_Manager -d -c $FLINK_CLASS $FLINK_JOB_JAR_PATH --parallelism $PARALLELISM --input $INPUT_FILE --output $OUTPUT_FILE
     ;;
   "0")
     echo "Bye"
