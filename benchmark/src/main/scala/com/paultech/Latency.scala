@@ -9,6 +9,8 @@ object Latency {
   def main(args: Array[String]): Unit = {
     val env = StreamExecutionEnvironment.getExecutionEnvironment
 
+    env.getConfig.setLatencyTrackingInterval(100)
+
     val parameterTool = ParameterTool.fromArgs(args)
     val parallelism = parameterTool.getInt("parallelism", 12)
     env.setParallelism(parallelism)
