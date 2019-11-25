@@ -11,11 +11,13 @@ object Latency {
 
     env.getConfig.setLatencyTrackingInterval(100)
 
-    val parameterTool = ParameterTool.fromArgs(args)
+    val latencyArgs = args ++ Array("flink.poll-timeout", "1")
+
+    val parameterTool = ParameterTool.fromArgs(latencyArgs)
     val parallelism = parameterTool.getInt("parallelism", 12)
     env.setParallelism(parallelism)
 
-    val kafkaSource = KafkaSourceUtil.getKafkaSource(args)
+    val kafkaSource = KafkaSourceUtil.getKafkaSource(parameterTool)
     val kafkaSink = KafkaSinkUtil.getKafkaSink(args)
 
     val dataStream = env.addSource(kafkaSource).name("kafka-source")
