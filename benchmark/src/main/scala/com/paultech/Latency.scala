@@ -11,9 +11,7 @@ object Latency {
 
     env.getConfig.setLatencyTrackingInterval(100)
 
-    val latencyArgs = args ++ Array("flink.poll-timeout", "1")
-
-    val parameterTool = ParameterTool.fromArgs(latencyArgs)
+    val parameterTool = ParameterTool.fromArgs(args)
     val parallelism = parameterTool.getInt("parallelism", 12)
     env.setParallelism(parallelism)
 
