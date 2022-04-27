@@ -13,26 +13,23 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Latency Analyzer
+ */
 public class KafkaLatencyAnalyzer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KafkaLatencyAnalyzer.class);
 
     private static final int NUMBER_OF_ANALYZER = 4;
 
-    private static Histogram histogram;
+    private static final Histogram histogram = new Histogram(new UniformReservoir());
 
     public static void main(String[] args) {
-
         LatencyCommandOpt latencyCommandOpt = LatencyCommandOpt.parseCommandLine(args);
         LOGGER.info(latencyCommandOpt.toString());
-        Properties properties = new KafkaConsumerConfig(latencyCommandOpt).toProperties();
-        LOGGER.info(properties.toString());
-
-        histogram = new Histogram(new UniformReservoir());
 
         ExecutorService executorService = Executors.newFixedThreadPool(NUMBER_OF_ANALYZER);
-
-        List<AnalyzerTask> analyzerGroup = createAnalyzerGroup(latencyCommandOpt.getTopic(), properties);
+        List<AnalyzerTask> analyzerGroup = createAnalyzerGroup(latencyCommandOpt);
 
         for (AnalyzerTask analyzerTask : analyzerGroup) {
             executorService.submit(analyzerTask);
@@ -51,13 +48,12 @@ public class KafkaLatencyAnalyzer {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
     }
 
-    private static List<AnalyzerTask> createAnalyzerGroup(String topic, Properties properties) {
+    private static List<AnalyzerTask> createAnalyzerGroup(LatencyCommandOpt latencyCommandOpt) {
         List<AnalyzerTask> analyzerTaskList = new ArrayList<>(NUMBER_OF_ANALYZER);
         for (int i = 0; i < NUMBER_OF_ANALYZER; i++) {
-            analyzerTaskList.add(new AnalyzerTask(topic, properties, histogram));
+            analyzerTaskList.add(new AnalyzerTask(latencyCommandOpt, histogram));
         }
         return analyzerTaskList;
     }
@@ -80,5 +76,4 @@ public class KafkaLatencyAnalyzer {
         LOGGER.info("MIN: {}", snapshot.getMin());
         LOGGER.info("---------------------------------------------------------");
     }
-
 }
