@@ -10,27 +10,23 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Generate Kafka test data
+ */
 public class KafkaDataSource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KafkaDataSource.class);
 
-    public static int numOfThreads = 4;
+    private static final int RUNNING_DURATION_MINUTE = 10;
+
     public static void main(String[] args) {
-        KafkaProducerConfig kafkaProducerConfig = new KafkaProducerConfig();
-
         CommandLineOpt commandLineOpt = CommandLineOpt.parseCommandLine(args);
-
         LOGGER.info(commandLineOpt.toString());
 
-        numOfThreads = commandLineOpt.getNumberOfThreads();
+        Properties kafkaProperties = commandLineOpt.buildKafkaProperties();
+        int numOfThreads = commandLineOpt.getNumberOfThreads();
 
-        kafkaProducerConfig.setBootstrapServer(commandLineOpt.getBootstrapServers());
-        kafkaProducerConfig.setTopic(commandLineOpt.getTopic());
-        kafkaProducerConfig.setAcks(commandLineOpt.getAcks());
-        Properties properties = kafkaProducerConfig.toProperties();
-
-
-        List<ProducerThread> producerThreadList = generateProducerThread(properties, numOfThreads, kafkaProducerConfig.getTopic());
+        List<ProducerThread> producerThreadList = generateProducerThread(commandLineOpt);
         ExecutorService executorService = Executors.newFixedThreadPool(numOfThreads);
         for (ProducerThread producerThread : producerThreadList) {
             executorService.submit(producerThread);
@@ -38,20 +34,20 @@ public class KafkaDataSource {
 
         executorService.shutdown();
         try {
-            if (!executorService.awaitTermination(30, TimeUnit.MINUTES)) {
+            if (!executorService.awaitTermination(RUNNING_DURATION_MINUTE, TimeUnit.MINUTES)) {
                 executorService.shutdownNow();
             }
         } catch (InterruptedException e) {
             LOGGER.error(e.toString());
             executorService.shutdownNow();
         }
-
     }
 
-    private static List<ProducerThread> generateProducerThread(Properties properties, int numOfThreads, String topic) {
-        List<ProducerThread> producerThreadList = new ArrayList<>(numOfThreads);
-        for (int i = 0; i < KafkaDataSource.numOfThreads; i++) {
-            producerThreadList.add(new ProducerThread(properties, topic));
+    private static List<ProducerThread> generateProducerThread(CommandLineOpt commandLineOpt) {
+        int numberOfThreads = commandLineOpt.getNumberOfThreads();
+        List<ProducerThread> producerThreadList = new ArrayList<>(numberOfThreads);
+        for (int i = 0; i < numberOfThreads; i++) {
+            producerThreadList.add(new ProducerThread(commandLineOpt));
         }
         return producerThreadList;
     }

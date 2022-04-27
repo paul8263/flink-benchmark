@@ -1,3 +1,13 @@
+# Flink benchmark
+
+This project is targeted to test Flink data throughput and latency with Kafka data source.
+
+# Environment Requirement
+
+* Flink
+* Hadoop Yarn cluster
+* Kafka
+
 # Compilation
 
 ```shell script

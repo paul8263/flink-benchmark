@@ -22,7 +22,8 @@ object Latency {
 
     dataStream.map(new MapFunction[String, String] {
       override def map(t: String): String = {
-        val eventTime = t.split(" ")(0)
+        val spaceIndex = t.indexOf(" ")
+        val eventTime = t.substring(0, spaceIndex)
         val processingTime = System.currentTimeMillis().toString
         s"$eventTime $processingTime"
       }
