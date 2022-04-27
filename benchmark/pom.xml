@@ -281,11 +281,6 @@
                     <version>${scala.version}</version>
                     <scope>compile</scope>
                 </dependency>
-                <dependency>
-                    <groupId>org.apache.flink</groupId>
-                    <artifactId>flink-table-common</artifactId>
-                    <version>${flink.version}</version>
-                </dependency>
             </dependencies>
         </profile>
     </profiles>

@@ -27,10 +27,6 @@ mvn clean package
 # Run Word Count
 ./bin/flink run -m 10.180.210.187:8081 -c com.paultech.WordCount /root/zy/benchmark/benchmark-1.0-SNAPSHOT.jar --parallelism 12 --output hdfs:///output.txt --input hdfs:///input.txt
 
-# Run Table SQL
-./bin/flink run -m 10.180.210.187:8081 -c com.paultech.TableSQL /root/zy/benchmark/benchmark-1.0-SNAPSHOT.jar --parallelism 12 --output hdfs:///output.csv --input hdfs:///input.csv
-```
-
 # How to run Kafka datasource
 
 ```shell script
