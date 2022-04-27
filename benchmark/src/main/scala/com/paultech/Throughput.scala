@@ -1,6 +1,6 @@
 package com.paultech
 
-import com.paultech.util.{KafkaSinkUtil, KafkaSourceUtil}
+import com.paultech.util.KafkaUtil
 import org.apache.flink.api.java.utils.ParameterTool
 import org.apache.flink.streaming.api.scala._
 import org.apache.flink.streaming.api.scala.function.ProcessAllWindowFunction
@@ -19,24 +19,24 @@ object Throughput {
 
     env.setParallelism(parallelism)
 
-    val datasource = KafkaSourceUtil.getKafkaSource(parameterTool)
+    val datasource = KafkaUtil.getKafkaSource(parameterTool)
 
     if (parameterTool.has("startFromEarliest")) {
         datasource.setStartFromEarliest()
     }
 
-    val stream: DataStream[String] = env.addSource(datasource)
+    val stream: DataStream[String] = env.addSource(datasource).name("kafka-source")
 
-    val sink = KafkaSinkUtil.getKafkaSink(args)
+    val sink = KafkaUtil.getKafkaSink(args)
 
     stream.windowAll(TumblingProcessingTimeWindows.of(Time.minutes(1))).process(new ProcessAllWindowFunction[String, String, TimeWindow] {
       override def process(context: Context, elements: Iterable[String], out: Collector[String]): Unit = {
         out.collect(elements.size.toString)
       }
-    })
-      .addSink(sink)
+    }).name("throughput-map")
+      .addSink(sink).name("kafka-sink")
 
-    env.execute("Identity Job")
+    env.execute("Throughput identity Job")
   }
 
 

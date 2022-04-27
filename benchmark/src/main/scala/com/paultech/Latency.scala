@@ -1,6 +1,6 @@
 package com.paultech
 
-import com.paultech.util.{KafkaSinkUtil, KafkaSourceUtil}
+import com.paultech.util.KafkaUtil
 import org.apache.flink.api.common.functions.MapFunction
 import org.apache.flink.api.java.utils.ParameterTool
 import org.apache.flink.streaming.api.scala._
@@ -15,8 +15,8 @@ object Latency {
     val parallelism = parameterTool.getInt("parallelism", 12)
     env.setParallelism(parallelism)
 
-    val kafkaSource = KafkaSourceUtil.getKafkaSource(parameterTool)
-    val kafkaSink = KafkaSinkUtil.getKafkaSink(args)
+    val kafkaSource = KafkaUtil.getKafkaSource(parameterTool)
+    val kafkaSink = KafkaUtil.getKafkaSink(args)
 
     val dataStream = env.addSource(kafkaSource).name("kafka-source")
 
