@@ -13,9 +13,9 @@ import java.util.concurrent.TimeUnit;
 /**
  * Generate Kafka test data
  */
-public class KafkaDataSource {
+public class KafkaDataGen {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(KafkaDataSource.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(KafkaDataGen.class);
 
     private static final int RUNNING_DURATION_MINUTE = 10;
 

@@ -9,7 +9,7 @@
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <modules>
-        <module>kafka-datasource</module>
+        <module>kafka-datagen</module>
         <module>benchmark</module>
         <module>kafka-latency-analyzer</module>
         <module>benchmark-dist</module>

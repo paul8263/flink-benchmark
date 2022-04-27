@@ -14,7 +14,7 @@ public class ProducerThread implements Runnable {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProducerThread.class);
     private final KafkaProducer<String, String> kafkaProducer;
     private final String topic;
-    private long interval;
+    private final long interval;
     private PayloadType payloadType = PayloadType.UUID;
     private volatile boolean isWorking = true;
 

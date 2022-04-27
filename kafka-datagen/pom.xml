@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>kafka-datasource</artifactId>
+    <artifactId>kafka-datagen</artifactId>
 
     <properties>
         <kafka.version>1.1.1</kafka.version>
@@ -53,7 +53,7 @@
                         <configuration>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>com.paultech.KafkaDataSource</mainClass>
+                                    <mainClass>com.paultech.KafkaDataGen</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>

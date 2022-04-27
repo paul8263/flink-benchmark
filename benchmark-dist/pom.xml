@@ -24,7 +24,7 @@
         </dependency>
         <dependency>
             <groupId>com.paultech</groupId>
-            <artifactId>kafka-datasource</artifactId>
+            <artifactId>kafka-datagen</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
