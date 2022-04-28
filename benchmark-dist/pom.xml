@@ -5,7 +5,7 @@
     <parent>
         <artifactId>flink-benchmark</artifactId>
         <groupId>com.paultech</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -20,17 +20,17 @@
         <dependency>
             <groupId>com.paultech</groupId>
             <artifactId>benchmark</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0</version>
         </dependency>
         <dependency>
             <groupId>com.paultech</groupId>
             <artifactId>kafka-datagen</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0</version>
         </dependency>
         <dependency>
             <groupId>com.paultech</groupId>
             <artifactId>kafka-latency-analyzer</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0</version>
         </dependency>
     </dependencies>
 

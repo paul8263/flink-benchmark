@@ -7,7 +7,7 @@
     <groupId>com.paultech</groupId>
     <artifactId>flink-benchmark</artifactId>
     <packaging>pom</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <modules>
         <module>kafka-datagen</module>
         <module>benchmark</module>

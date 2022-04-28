@@ -5,7 +5,7 @@
     <formats>
         <format>dir</format>
     </formats>
-    <includeBaseDirectory>false</includeBaseDirectory>
+    <includeBaseDirectory>true</includeBaseDirectory>
     <baseDirectory>benchmark-dist</baseDirectory>
     <fileSets>
         <fileSet>
@@ -16,7 +16,6 @@
         </fileSet>
     </fileSets>
     <files>
-
         <file>
             <source>${basedir}/../benchmark/target/benchmark-${version}.jar</source>
             <outputDirectory>.</outputDirectory>
@@ -33,9 +32,10 @@
             <fileMode>0755</fileMode>
         </file>
     </files>
-    <dependencySets>
+
+<!--    <dependencySets>
         <dependencySet>
             <outputDirectory>libs</outputDirectory>
         </dependencySet>
-    </dependencySets>
+    </dependencySets>-->
 </assembly>

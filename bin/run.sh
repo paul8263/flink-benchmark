@@ -15,9 +15,11 @@ echo -e "\n"
 
 read -p "Please input your choice(0 to exit): " CHOICE
 
+display_path
+
 case "$CHOICE" in
 "1")
-  run_kafka_datasource
+  run_kafka_datagen
   ;;
 
 "2")
