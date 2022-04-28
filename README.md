@@ -2,6 +2,10 @@
 
 This project is targeted to test Flink data throughput and latency with Kafka data source.
 
+# Author
+
+Paul Zhang
+
 # Environment Requirement
 
 * Flink
@@ -104,3 +108,11 @@ Examples:
 ```shell script
 java -jar kafka-latency-analyzer-1.0-SNAPSHOT.jar -b 10.180.210.187:6667,10.180.210.188:6667,10.180.210.189:6667 -t output1 -g analyzer
 ```
+
+# Appendix
+
+## Start benchmark via step-by-stp guide
+
+1. Enter `flink-benchmark/benchmark-dist/target/dist/benchmark-dist/bin`.
+2. Update `benchmark-env.sh` by setting `FLINK_HOME` and `JAVA_HOME`(optional).
+3. Execute `run.sh` and then follow the instruction.
