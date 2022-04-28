@@ -38,6 +38,4 @@ object Throughput {
 
     env.execute("Throughput identity Job")
   }
-
-
 }

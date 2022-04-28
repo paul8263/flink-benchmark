@@ -48,7 +48,7 @@ The output is how many records per minute the Flink is able to process.
 Your need to run latency analyzer to calculate the histogram of latency.
 
 ```shell script
-java -jar kafka-latency-analyzer-1.0-SNAPSHOT.jar -b 10.180.210.187:6667,10.180.210.188:6667,10.180.210.189:6667 -t output -g analyzer
+java -jar kafka-latency-analyzer-1.0-SNAPSHOT.jar -b kafka01:6667,kafka02:6667,kafka03:6667 -t output
 ```
 
 # Command options
