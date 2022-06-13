@@ -16,6 +16,7 @@ object Throughput {
 
     val parameterTool = ParameterTool.fromArgs(args)
     val parallelism = parameterTool.getInt("parallelism", 12)
+    val windowSize = Time.seconds(parameterTool.getInt("windowsize", 60))
 
     env.setParallelism(parallelism)
 
@@ -27,9 +28,9 @@ object Throughput {
 
     val stream: DataStream[String] = env.addSource(datasource).name("kafka-source")
 
-    val sink = KafkaUtil.getKafkaSink(args)
+    val sink = KafkaUtil.getKafkaSink(parameterTool)
 
-    stream.windowAll(TumblingProcessingTimeWindows.of(Time.minutes(1))).process(new ProcessAllWindowFunction[String, String, TimeWindow] {
+    stream.windowAll(TumblingProcessingTimeWindows.of(windowSize)).process(new ProcessAllWindowFunction[String, String, TimeWindow] {
       override def process(context: Context, elements: Iterable[String], out: Collector[String]): Unit = {
         out.collect(elements.size.toString)
       }

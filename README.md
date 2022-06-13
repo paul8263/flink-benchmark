@@ -25,7 +25,7 @@ mvn clean package
 ```shell
 java -jar kafka-datasource-1.0-SNAPSHOT.jar -t test_topic -b kafka01:6667,kafka02:6667,kafka03:6667 -a 0 -i 10 -n 1 -p uuid
 ```
-## 2. Start Flink Job
+## 2. Submit Flink Job
 
 ```shell
 # Benchmark Throughput
@@ -34,6 +34,12 @@ java -jar kafka-datasource-1.0-SNAPSHOT.jar -t test_topic -b kafka01:6667,kafka0
 # Benchmark Latency
 ./bin/flink run -m yarn-cluster -c com.paultech.Latency /path/to/benchmark/benchmark-1.0-SNAPSHOT.jar --parallelism 12 --output-topic output --input-topic input --bootstrap-server kafka01:6667,kafka02:6667,kafka03:6667
 ```
+
+> **Note**: If we start Flink throughput test we should increase the memory size of both job manager and task manager, or use a smaller window size.
+> For example:
+> ```shell
+> ./yarn-session -jm 4096 -tm 20480 -s 1
+> ```
 
 ## 3. Get result
 

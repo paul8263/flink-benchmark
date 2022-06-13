@@ -16,7 +16,7 @@ object Latency {
     env.setParallelism(parallelism)
 
     val kafkaSource = KafkaUtil.getKafkaSource(parameterTool)
-    val kafkaSink = KafkaUtil.getKafkaSink(args)
+    val kafkaSink = KafkaUtil.getKafkaSink(parameterTool)
 
     val dataStream = env.addSource(kafkaSource).name("kafka-source")
 
