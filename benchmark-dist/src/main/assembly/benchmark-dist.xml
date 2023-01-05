@@ -6,7 +6,7 @@
         <format>dir</format>
     </formats>
     <includeBaseDirectory>true</includeBaseDirectory>
-    <baseDirectory>benchmark-dist</baseDirectory>
+    <baseDirectory>flink-benchmark</baseDirectory>
     <fileSets>
         <fileSet>
             <directory>${basedir}/../bin</directory>

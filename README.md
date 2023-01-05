@@ -8,15 +8,19 @@ Paul Zhang
 
 # Environment Requirement
 
-* Flink
+* Flink 1.13.2
 * Hadoop Yarn cluster
-* Kafka
+* Kafka 1.1.1
+
+If you have deployed Flink/Kafka with different version, please update Flink/Kafka version properties in `pom.xml` before compilation.
 
 # Compilation
 
 ```shell
 mvn clean package
 ```
+
+The binary distribution locates in `benchmark-dist/target/dist/flink-benchmark`.
 
 # How to run benchmark
 
@@ -111,7 +115,7 @@ java -jar kafka-latency-analyzer-1.0-SNAPSHOT.jar -b 10.180.210.187:6667,10.180.
 
 # Appendix
 
-## Start benchmark via step-by-stp guide
+## Start benchmark via step-by-step guide
 
 1. Enter `flink-benchmark/benchmark-dist/target/dist/benchmark-dist/bin`.
 2. Update `benchmark-env.sh` by setting `FLINK_HOME` and `JAVA_HOME`(optional).
