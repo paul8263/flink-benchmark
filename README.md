@@ -43,11 +43,13 @@ java -jar kafka-datasource-1.0.jar -t test_topic -b kafka01:6667,kafka02:6667,ka
 
 ### 3. Get result
 
-Your need to run latency analyzer to calculate the histogram of latency.
+Your need to run result analyzer to calculate the histogram of latency.
 
 ```shell script
-java -jar kafka-latency-analyzer-1.0.jar -b kafka01:6667,kafka02:6667,kafka03:6667 -t output
+java -jar kafka-result-analyzer-1.0.jar -b kafka01:6667,kafka02:6667,kafka03:6667 -t output
 ```
+
+> Flink might need some time to consume all pending records, so you might need run result analyzer several times.
 
 ## Window throughput benchmark
 
