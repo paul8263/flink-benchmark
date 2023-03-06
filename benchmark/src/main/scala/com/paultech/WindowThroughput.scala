@@ -27,7 +27,7 @@ object WindowThroughput {
 
     val stream: DataStream[String] = env.addSource(datasource).name("kafka-source")
 
-    val sink = KafkaUtil.getKafkaSink(args)
+    val sink = KafkaUtil.getKafkaSink(parameterTool)
 
     stream.windowAll(TumblingProcessingTimeWindows.of(Time.minutes(1))).process(new ProcessAllWindowFunction[String, String, TimeWindow] {
       override def process(context: Context, elements: Iterable[String], out: Collector[String]): Unit = {

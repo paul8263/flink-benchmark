@@ -8,15 +8,14 @@ import org.apache.flink.streaming.api.scala._
 object Latency {
   def main(args: Array[String]): Unit = {
     val env = StreamExecutionEnvironment.getExecutionEnvironment
-
-    env.getConfig.setLatencyTrackingInterval(100)
+//    env.getConfig.setLatencyTrackingInterval(100)
 
     val parameterTool = ParameterTool.fromArgs(args)
     val parallelism = parameterTool.getInt("parallelism", 12)
     env.setParallelism(parallelism)
 
     val kafkaSource = KafkaUtil.getKafkaSource(parameterTool)
-    val kafkaSink = KafkaUtil.getKafkaSink(args)
+    val kafkaSink = KafkaUtil.getKafkaSink(parameterTool)
 
     val dataStream = env.addSource(kafkaSource).name("kafka-source")
 

@@ -7,8 +7,7 @@ import org.apache.flink.streaming.connectors.kafka.{FlinkKafkaConsumer, FlinkKaf
 import java.util.Properties
 
 object KafkaUtil {
-  def getKafkaSink(args: Array[String]): FlinkKafkaProducer[String] = {
-    val parameterTool = ParameterTool.fromArgs(args)
+  def getKafkaSink(parameterTool: ParameterTool): FlinkKafkaProducer[String] = {
     val bootstrapServer = parameterTool.get("bootstrap-server", "localhost:9092")
     val outputTopic = parameterTool.get("output-topic", "output-topic")
 
