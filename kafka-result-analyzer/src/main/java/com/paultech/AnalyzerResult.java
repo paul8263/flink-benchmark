@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.Optional;
 
 public class AnalyzerResult {
-    private Long startTime = 0L;
+    private Long startTime = Long.MAX_VALUE;
 
-    private Long endTime = 0L;
+    private Long endTime = Long.MIN_VALUE;
 
     private Long count = 0L;
 
@@ -33,10 +33,10 @@ public class AnalyzerResult {
 
     public void update(Long startTime, Long endTime) {
         this.count++;
-        if (endTime >= this.startTime) {
+        if (startTime < this.startTime) {
             this.startTime = startTime;
         }
-        if (startTime <= this.endTime) {
+        if (endTime > this.endTime) {
             this.endTime = endTime;
         }
     }
@@ -58,6 +58,11 @@ public class AnalyzerResult {
             return new AnalyzerResult(startTime, endTime, count);
         });
 
-        return reducedResult.isPresent() ? reducedResult.get().getCount() : 0L;
+        if (reducedResult.isPresent()) {
+            AnalyzerResult analyzerResult = reducedResult.get();
+            return analyzerResult.getCount() * 1000 / (analyzerResult.getEndTime() - analyzerResult.getStartTime());
+        } else {
+            return 0L;
+        }
     }
 }

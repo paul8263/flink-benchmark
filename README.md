@@ -36,9 +36,6 @@ java -jar kafka-datasource-1.0.jar -t test_topic -b kafka01:6667,kafka02:6667,ka
 ```shell
 # Latency and Throughput benchmark
 ./bin/flink run -m yarn-cluster -c com.paultech.Latency /path/to/benchmark/benchmark-1.0.jar --parallelism 12 --output-topic output --input-topic input --bootstrap-server kafka01:6667,kafka02:6667,kafka03:6667
-
-# Benchmark Throughput
-./bin/flink run -m yarn-cluster -c com.paultech.Throughput /path/to/benchmark/benchmark-1.0.jar --parallelism 12 --output-topic output --input-topic input --bootstrap-server kafka01:6667,kafka02:6667,kafka03:6667
 ```
 
 ### 3. Get result
@@ -92,13 +89,13 @@ Examples:
 
 ```shell
 # Run Throughput
-./bin/flink run -m 10.180.210.187:8081 -c com.paultech.Throughput /root/zy/benchmark/benchmark-1.0-SNAPSHOT.jar --parallelism 12 --output-topic output --input-topic input --bootstrap-server 10.180.210.187:6667,10.180.210.188:6667,10.180.210.189:6667
+./bin/flink run -m 10.180.210.187:8081 -c com.paultech.WindowThroughput /root/zy/benchmark/benchmark-1.0.jar --parallelism 12 --output-topic output --input-topic input --bootstrap-server 10.180.210.187:6667,10.180.210.188:6667,10.180.210.189:6667
 
 # Run Latency
-./bin/flink run -m 10.180.210.187:8081 -c com.paultech.Latency /root/zy/benchmark/benchmark-1.0-SNAPSHOT.jar --parallelism 12 --output-topic output --input-topic input --bootstrap-server 10.180.210.187:6667,10.180.210.188:6667,10.180.210.189:6667
+./bin/flink run -m 10.180.210.187:8081 -c com.paultech.Latency /root/zy/benchmark/benchmark-1.0.jar --parallelism 12 --output-topic output --input-topic input --bootstrap-server 10.180.210.187:6667,10.180.210.188:6667,10.180.210.189:6667
 
 # Run Word Count
-./bin/flink run -m 10.180.210.187:8081 -c com.paultech.WordCount /root/zy/benchmark/benchmark-1.0-SNAPSHOT.jar --parallelism 12 --output hdfs:///output.txt --input hdfs:///input.txt
+./bin/flink run -m 10.180.210.187:8081 -c com.paultech.WordCount /root/zy/benchmark/benchmark-1.0.jar --parallelism 12 --output hdfs:///output.txt --input hdfs:///input.txt
 ```
 
 ## Kafka datagen command options
