@@ -7,21 +7,24 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.Properties;
 
 public class AnalyzerTask implements Runnable {
     private static final Logger LOGGER = LoggerFactory.getLogger(AnalyzerTask.class);
     private final KafkaConsumer<String, String> kafkaConsumer;
     private final Histogram histogram;
+    private final AnalyzerResult analyzerResult = new AnalyzerResult();
 
     private volatile boolean isWorking = true;
 
-    public AnalyzerTask(LatencyCommandOpt latencyCommandOpt, Histogram histogram) {
-        kafkaConsumer = new KafkaConsumer<>(latencyCommandOpt.buildKafkaProperties());
-        kafkaConsumer.subscribe(Collections.singletonList(latencyCommandOpt.getTopic()));
+    public AnalyzerTask(ResultCommandOpt resultCommandOpt, Histogram histogram) {
+        kafkaConsumer = new KafkaConsumer<>(resultCommandOpt.buildKafkaProperties());
+        kafkaConsumer.subscribe(Collections.singletonList(resultCommandOpt.getTopic()));
         this.histogram = histogram;
+    }
+
+    public AnalyzerResult getAnalyzerResult() {
+        return analyzerResult;
     }
 
     @Override
@@ -32,7 +35,10 @@ public class AnalyzerTask implements Runnable {
                 String value = consumerRecord.value();
                 LOGGER.info("Value: {}", value);
                 String[] split = value.split(" ");
-                histogram.update(Long.parseLong(split[1]) - Long.parseLong(split[0]));
+                long endTime = Long.parseLong(split[1]);
+                long startTime = Long.parseLong(split[0]);
+                histogram.update(Math.max(0, endTime - startTime));
+                analyzerResult.update(startTime, endTime);
             }
         }
     }

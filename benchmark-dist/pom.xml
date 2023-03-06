@@ -29,7 +29,7 @@
         </dependency>
         <dependency>
             <groupId>com.paultech</groupId>
-            <artifactId>kafka-latency-analyzer</artifactId>
+            <artifactId>kafka-result-analyzer</artifactId>
             <version>1.0</version>
         </dependency>
     </dependencies>

@@ -27,7 +27,7 @@
             <fileMode>0755</fileMode>
         </file>
         <file>
-            <source>${basedir}/../kafka-latency-analyzer/target/kafka-latency-analyzer-${version}.jar</source>
+            <source>${basedir}/../kafka-result-analyzer/target/kafka-result-analyzer-${version}.jar</source>
             <outputDirectory>.</outputDirectory>
             <fileMode>0755</fileMode>
         </file>

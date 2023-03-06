@@ -11,7 +11,7 @@
     <modules>
         <module>kafka-datagen</module>
         <module>benchmark</module>
-        <module>kafka-latency-analyzer</module>
+        <module>kafka-result-analyzer</module>
         <module>benchmark-dist</module>
     </modules>
 

@@ -2,7 +2,7 @@
 
 FLINK_JOB_JAR_NAME="benchmark-*.jar"
 KAFKA_DATAGEN_JAR_NAME="kafka-datagen-*.jar"
-KAFKA_LATENCY_ANALYZER_JAR_NAME="kafka-latency-analyzer-*.jar"
+KAFKA_RESULT_ANALYZER_JAR_NAME="kafka-result-analyzer-*.jar"
 
 CURRENT_DIR=$(
   cd $(dirname $0)
@@ -11,7 +11,7 @@ CURRENT_DIR=$(
 
 FLINK_JOB_JAR_PATH=`readlink -f ../$FLINK_JOB_JAR_NAME`
 KAFKA_DATAGEN_JAR_PATH=`readlink -f ../$KAFKA_DATAGEN_JAR_NAME`
-KAFKA_LATENCY_ANALYZER_JAR_PATH=`readlink -f ../$KAFKA_LATENCY_ANALYZER_JAR_NAME`
+KAFKA_RESULT_ANALYZER_JAR_PATH=`readlink -f ../KAFKA_RESULT_ANALYZER_JAR_NAME`
 
 welcome() {
   echo "=============================================="
@@ -27,7 +27,7 @@ display_path() {
   echo 'Found jar files location:'
   echo $FLINK_JOB_JAR_PATH
   echo $KAFKA_DATAGEN_JAR_PATH
-  echo $KAFKA_LATENCY_ANALYZER_JAR_PATH
+  echo $KAFKA_RESULT_ANALYZER_JAR_PATH
 }
 
 command_exists() {
@@ -77,15 +77,15 @@ run_kafka_datagen() {
   $JAVA_COMMAND -jar $KAFKA_DATAGEN_JAR_PATH -b $BOOTSTRAP_SERVER -n $THREADS -a $ACKS -t $TOPIC -i $INTERVAL -p $PAYLOAD_TYPE
 }
 
-run_kafka_latency_analyzer() {
+run_kafka_result_analyzer() {
   echo "Run Kafka latency analyzer"
 
-  check_jar_file_exists $KAFKA_LATENCY_ANALYZER_JAR_PATH
+  check_jar_file_exists $KAFKA_RESULT_ANALYZER_JAR_PATH
 
   read -p "Kafka bootstrap server: " BOOTSTRAP_SERVER
   read -p "Output topic: " TOPIC
 
-  $JAVA_COMMAND -jar $KAFKA_LATENCY_ANALYZER_JAR_PATH -b $BOOTSTRAP_SERVER -t $TOPIC
+  $JAVA_COMMAND -jar $KAFKA_RESULT_ANALYZER_JAR_PATH -b $BOOTSTRAP_SERVER -t $TOPIC
 }
 
 run_benchmark() {
@@ -94,13 +94,13 @@ run_benchmark() {
   check_jar_file_exists $FLINK_JOB_JAR_PATH
 
   echo "Type of benchmark:"
-  echo "1) Throughput"
-  echo "2) Latency"
+  echo "1) Window Throughput"
+  echo "2) Latency and Throughput"
 
   read -p "Your choice(0 to exit): " CHOICE
   case "$CHOICE" in
   "1")
-    FLINK_CLASS="com.paultech.Throughput"
+    FLINK_CLASS="com.paultech.WindowThroughput"
     read -p "kafka bootstrap server: " BOOTSTRAP_SERVER
     read -p "Input topic: " INPUT_TOPIC
     read -p "Output topic: " OUTPUT_TOPIC

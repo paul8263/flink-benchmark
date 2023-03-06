@@ -22,42 +22,59 @@ mvn clean package
 
 The binary distribution locates in `benchmark-dist/target/dist/flink-benchmark`.
 
-# How to run benchmark
+# Run benchmarks
 
-## 1. Start Kafka datagen
+## Latency and Throughput
+
+### 1. Start Kafka datagen
 
 ```shell
-java -jar kafka-datasource-1.0-SNAPSHOT.jar -t test_topic -b kafka01:6667,kafka02:6667,kafka03:6667 -a 0 -i 10 -n 1 -p uuid
+java -jar kafka-datasource-1.0.jar -t test_topic -b kafka01:6667,kafka02:6667,kafka03:6667 -a 0 -i 10 -n 1 -p uuid
 ```
-## 2. Start Flink Job
+### 2. Start Flink Job
 
 ```shell
+# Latency and Throughput benchmark
+./bin/flink run -m yarn-cluster -c com.paultech.Latency /path/to/benchmark/benchmark-1.0.jar --parallelism 12 --output-topic output --input-topic input --bootstrap-server kafka01:6667,kafka02:6667,kafka03:6667
+
 # Benchmark Throughput
-./bin/flink run -m yarn-cluster -c com.paultech.Throughput /path/to/benchmark/benchmark-1.0-SNAPSHOT.jar --parallelism 12 --output-topic output --input-topic input --bootstrap-server kafka01:6667,kafka02:6667,kafka03:6667
-
-# Benchmark Latency
-./bin/flink run -m yarn-cluster -c com.paultech.Latency /path/to/benchmark/benchmark-1.0-SNAPSHOT.jar --parallelism 12 --output-topic output --input-topic input --bootstrap-server kafka01:6667,kafka02:6667,kafka03:6667
+./bin/flink run -m yarn-cluster -c com.paultech.Throughput /path/to/benchmark/benchmark-1.0.jar --parallelism 12 --output-topic output --input-topic input --bootstrap-server kafka01:6667,kafka02:6667,kafka03:6667
 ```
 
-## 3. Get result
+### 3. Get result
 
-### Throughput benchmark
+Your need to run latency analyzer to calculate the histogram of latency.
 
-Data will be collected in 1-minute-window. Use the following command to retrieve the output from output topic:
+```shell script
+java -jar kafka-latency-analyzer-1.0.jar -b kafka01:6667,kafka02:6667,kafka03:6667 -t output
+```
+
+## Window throughput benchmark
+
+### 1. Start Kafka datagen
+
+```shell
+java -jar kafka-datasource-1.0.jar -t test_topic -b kafka01:6667,kafka02:6667,kafka03:6667 -a 0 -i 10 -n 1 -p uuid
+```
+
+### 2. Start Flink Job
+
+```shell
+# Window Throughput benchmark
+./bin/flink run -m yarn-cluster -c com.paultech.WindowThroughput /path/to/benchmark/benchmark-1.0.jar --parallelism 12 --output-topic output --input-topic input --bootstrap-server kafka01:6667,kafka02:6667,kafka03:6667
+```
+
+Data will be collected in 1-minute-window. 
+
+### 3. Get result
+
+Use the following command to retrieve the result from output topic:
 
 ```shell
 ./kafka-console-consumer.sh --bootstrap-server kafka01:6667,kafka02:6667,kafka03:6667 --topic output
 ```
 
-The output is how many records per minute the Flink is able to process.
-
-### Latency benchmark
-
-Your need to run latency analyzer to calculate the histogram of latency.
-
-```shell script
-java -jar kafka-latency-analyzer-1.0-SNAPSHOT.jar -b kafka01:6667,kafka02:6667,kafka03:6667 -t output
-```
+The output is how many records in a 1-minute-long window that Flink is able to process.
 
 # Command options
 

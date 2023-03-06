@@ -6,8 +6,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
 
-public class LatencyCommandOpt {
-    private static final Logger LOGGER = LoggerFactory.getLogger(LatencyCommandOpt.class);
+public class ResultCommandOpt {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ResultCommandOpt.class);
 
     // Command line options
     private static final String BOOTSTRAP_SERVERS = "bootstrap-servers";
@@ -98,9 +98,9 @@ public class LatencyCommandOpt {
         return options;
     }
 
-    public static LatencyCommandOpt parseCommandLine(String[] args) {
+    public static ResultCommandOpt parseCommandLine(String[] args) {
         CommandLineParser commandLineParser = new DefaultParser();
-        LatencyCommandOpt latencyCommandOpt = new LatencyCommandOpt();
+        ResultCommandOpt resultCommandOpt = new ResultCommandOpt();
         try {
             Options buildOptions = buildOptions();
             CommandLine commandLine = commandLineParser.parse(buildOptions, args);
@@ -118,13 +118,13 @@ public class LatencyCommandOpt {
                 LOGGER.error("Option bootstrap servers is required. Exit");
                 System.exit(0);
             }
-            latencyCommandOpt.bootstrapServers = commandLine.getOptionValue("bootstrap-servers");
-            latencyCommandOpt.topic = commandLine.getOptionValue("topic");
-            latencyCommandOpt.groupId = commandLine.getOptionValue("group-id", "default-group");
+            resultCommandOpt.bootstrapServers = commandLine.getOptionValue("bootstrap-servers");
+            resultCommandOpt.topic = commandLine.getOptionValue("topic");
+            resultCommandOpt.groupId = commandLine.getOptionValue("group-id", "default-group");
         } catch (ParseException e) {
             LOGGER.error(e.getMessage());
         }
-        return latencyCommandOpt;
+        return resultCommandOpt;
     }
 
     public Properties buildKafkaProperties() {

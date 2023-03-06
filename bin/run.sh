@@ -9,7 +9,7 @@ validate_flink_home
 
 echo "1) Run Kafka datasource"
 echo "2) Run Benchmark"
-echo "3) Run Kafka latency analyzer"
+echo "3) Run Kafka result analyzer"
 
 echo -e "\n"
 
@@ -27,7 +27,7 @@ case "$CHOICE" in
   ;;
 
 "3")
-  run_kafka_latency_analyzer
+  run_kafka_result_analyzer
   ;;
 
 "0")
