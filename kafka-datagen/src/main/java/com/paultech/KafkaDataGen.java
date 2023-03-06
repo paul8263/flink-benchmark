@@ -17,9 +17,7 @@ import java.util.concurrent.TimeUnit;
  * Generate Kafka test data
  */
 public class KafkaDataGen {
-
     private static final Logger LOGGER = LoggerFactory.getLogger(KafkaDataGen.class);
-
     private static final int RUNNING_DURATION_MINUTE = 10;
 
     public static void main(String[] args) {
@@ -28,10 +26,8 @@ public class KafkaDataGen {
 
         createTopic(commandLineOpt);
 
-        int numOfThreads = commandLineOpt.getNumberOfThreads();
-
         List<ProducerThread> producerThreadList = generateProducerThread(commandLineOpt);
-        ExecutorService executorService = Executors.newFixedThreadPool(numOfThreads);
+        ExecutorService executorService = Executors.newFixedThreadPool(commandLineOpt.getNumberOfThreads());
         for (ProducerThread producerThread : producerThreadList) {
             executorService.submit(producerThread);
         }
@@ -40,12 +36,15 @@ public class KafkaDataGen {
         logInfo(commandLineOpt);
         try {
             if (!executorService.awaitTermination(RUNNING_DURATION_MINUTE, TimeUnit.MINUTES)) {
+                closeProducerThread(producerThreadList);
+                Thread.sleep(1500);
                 executorService.shutdownNow();
             }
         } catch (InterruptedException e) {
             LOGGER.error(e.toString());
             executorService.shutdownNow();
         }
+        LOGGER.info("Data Generator exited");
     }
     private static void createTopic(CommandLineOpt commandLineOpt) {
         Properties kafkaProperties = commandLineOpt.buildKafkaProperties();
@@ -56,14 +55,13 @@ public class KafkaDataGen {
                 LOGGER.info("Topic \"{}\" already exists. Delete it first.", topic);
                 adminClient.deleteTopics(Collections.singletonList(topic)).all().get();
             }
-
             // Make sure the topic has been deleted
             Thread.sleep(1000);
             LOGGER.info("Create topic: {} with numOfPartitions: {}", topic, commandLineOpt.getNumberOfThreads());
             NewTopic newTopic = new NewTopic(topic, commandLineOpt.getNumberOfThreads(), (short) 1);
             adminClient.createTopics(Collections.singletonList(newTopic)).all().get();
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage());
             LOGGER.error("Create topic error. Topic name: {}", topic);
         }
     }
@@ -77,6 +75,12 @@ public class KafkaDataGen {
         return producerThreadList;
     }
 
+    private static void closeProducerThread(List<ProducerThread> producerThreadList) {
+        for (ProducerThread producerThread : producerThreadList) {
+            producerThread.close();
+        }
+    }
+
     private static void logInfo(CommandLineOpt commandLineOpt) {
         long messageSendInterval = commandLineOpt.getMessageSendInterval();
         LOGGER.info("------ Flink Benchmark Data Generator ------");
@@ -85,7 +89,8 @@ public class KafkaDataGen {
         LOGGER.info(" Interval: {}", messageSendInterval);
         LOGGER.info(" Payload: {}", commandLineOpt.getPayloadType());
         if (messageSendInterval > 0) {
-            LOGGER.info(" Estimated speed: {} records/s", commandLineOpt.getNumberOfThreads() * 1000 / messageSendInterval);
+            LOGGER.info(" Estimated speed: {} records/s", commandLineOpt.getNumberOfThreads() * 1000L / messageSendInterval);
         }
+        LOGGER.info(" Data Generator will be running for {} minutes", RUNNING_DURATION_MINUTE);
     }
 }

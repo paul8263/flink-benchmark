@@ -29,13 +29,16 @@ The binary distribution locates in `benchmark-dist/target/dist/flink-benchmark`.
 ### 1. Start Kafka datagen
 
 ```shell
-java -jar kafka-datasource-1.0.jar -t test_topic -b kafka01:6667,kafka02:6667,kafka03:6667 -a 0 -i 10 -n 1 -p uuid
+java -jar kafka-datasource-1.0.jar -t test_topic -b kafka01:6667,kafka02:6667,kafka03:6667 -a 0 -i 10 -n 4 -p uuid
 ```
-### 2. Start Flink Job
+### 2. Create output topic and start Flink job
 
 ```shell
+# Create topic with designated partitions
+./kafka-topics.sh --create --zookeeper manager.bigdata:2181,master.bigdata:2181,worker.bigdata:2181 --replication-factor 1 --partitions 4 --topic output
+
 # Latency and Throughput benchmark
-./bin/flink run -m yarn-cluster -c com.paultech.Latency /path/to/benchmark/benchmark-1.0.jar --parallelism 12 --output-topic output --input-topic input --bootstrap-server kafka01:6667,kafka02:6667,kafka03:6667
+./bin/flink run -m yarn-cluster -c com.paultech.Latency /path/to/benchmark/benchmark-1.0.jar --parallelism 4 --output-topic output --input-topic input --bootstrap-server kafka01:6667,kafka02:6667,kafka03:6667
 ```
 
 ### 3. Get result
@@ -51,14 +54,14 @@ java -jar kafka-latency-analyzer-1.0.jar -b kafka01:6667,kafka02:6667,kafka03:66
 ### 1. Start Kafka datagen
 
 ```shell
-java -jar kafka-datasource-1.0.jar -t test_topic -b kafka01:6667,kafka02:6667,kafka03:6667 -a 0 -i 10 -n 1 -p uuid
+java -jar kafka-datasource-1.0.jar -t test_topic -b kafka01:6667,kafka02:6667,kafka03:6667 -a 0 -i 10 -n 4 -p uuid
 ```
 
 ### 2. Start Flink Job
 
 ```shell
 # Window Throughput benchmark
-./bin/flink run -m yarn-cluster -c com.paultech.WindowThroughput /path/to/benchmark/benchmark-1.0.jar --parallelism 12 --output-topic output --input-topic input --bootstrap-server kafka01:6667,kafka02:6667,kafka03:6667
+./bin/flink run -m yarn-cluster -c com.paultech.WindowThroughput /path/to/benchmark/benchmark-1.0.jar --parallelism 4 --output-topic output --input-topic input --bootstrap-server kafka01:6667,kafka02:6667,kafka03:6667
 ```
 
 Data will be collected in 1-minute-window. 

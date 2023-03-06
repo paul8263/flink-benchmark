@@ -15,7 +15,7 @@ public enum PayloadType {
     public static PayloadType of(String payloadType) {
         if (null == payloadType) return null;
         for (PayloadType value : PayloadType.values()) {
-            if (value.literal.equals(payloadType.toLowerCase(Locale.ROOT))) {
+            if (value.literal.equalsIgnoreCase(payloadType)) {
                 return value;
             }
         }

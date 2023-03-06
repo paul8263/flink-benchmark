@@ -23,10 +23,6 @@ public class CommandLineOpt {
     private String bootstrapServers;
     private String topic;
     private String acks = "0";
-    private int batchSize = 16384;
-    private int lingerms = 32;
-    private int retries = 0;
-    private int bufferMemory = -1;
     private String keySerializer = "org.apache.kafka.common.serialization.StringSerializer";
     private String valueSerializer = "org.apache.kafka.common.serialization.StringSerializer";
 
@@ -34,7 +30,7 @@ public class CommandLineOpt {
     private int numberOfThreads = 1;
     private long messageSendInterval = -1;
 
-    private String payloadType = "UUID";
+    private PayloadType payloadType;
 
     public String getBootstrapServers() {
         return bootstrapServers;
@@ -58,38 +54,6 @@ public class CommandLineOpt {
 
     public void setAcks(String acks) {
         this.acks = acks;
-    }
-
-    public int getBatchSize() {
-        return batchSize;
-    }
-
-    public void setBatchSize(int batchSize) {
-        this.batchSize = batchSize;
-    }
-
-    public int getLingerms() {
-        return lingerms;
-    }
-
-    public void setLingerms(int lingerms) {
-        this.lingerms = lingerms;
-    }
-
-    public int getRetries() {
-        return retries;
-    }
-
-    public void setRetries(int retries) {
-        this.retries = retries;
-    }
-
-    public int getBufferMemory() {
-        return bufferMemory;
-    }
-
-    public void setBufferMemory(int bufferMemory) {
-        this.bufferMemory = bufferMemory;
     }
 
     public String getKeySerializer() {
@@ -124,11 +88,11 @@ public class CommandLineOpt {
         this.messageSendInterval = messageSendInterval;
     }
 
-    public String getPayloadType() {
+    public PayloadType getPayloadType() {
         return payloadType;
     }
 
-    public void setPayloadType(String payloadType) {
+    public void setPayloadType(PayloadType payloadType) {
         this.payloadType = payloadType;
     }
 
@@ -155,46 +119,39 @@ public class CommandLineOpt {
                 helpFormatter.printHelp("-b -t -a -n -i -p", buildOptions);
                 System.exit(0);
             }
-
-            if (null == commandLine.getOptionValue(BOOTSTRAP_SERVERS)) {
-                LOGGER.error("Option bootstrap servers is required. Exit");
-                System.exit(-1);
-            }
-            if (null == commandLine.getOptionValue(TOPIC)) {
-                LOGGER.error("Option topic is required. Exit");
-                System.exit(-1);
-            }
             commandLineOpt.bootstrapServers = commandLine.getOptionValue(BOOTSTRAP_SERVERS);
             commandLineOpt.topic = commandLine.getOptionValue(TOPIC);
-
-            Optional.ofNullable(commandLine.getOptionValue(ACKS)).ifPresent((acks) -> {
-                commandLineOpt.acks = acks;
-            });
-            Optional.ofNullable(commandLine.getOptionValue(NUMBER_OF_THREADS)).ifPresent((numberOfThreads) -> {
-                commandLineOpt.numberOfThreads = Integer.parseInt(numberOfThreads);
-            });
-            Optional.ofNullable(commandLine.getOptionValue(MESSAGE_SEND_INTERVAL)).ifPresent((interval) -> {
-                commandLineOpt.messageSendInterval = Long.parseLong(interval);
-            });
-            Optional.ofNullable(commandLine.getOptionValue(PAYLOAD_TYPE)).ifPresent((payloadType) -> {
-                commandLineOpt.payloadType = payloadType;
-            });
+            commandLineOpt.acks = commandLine.getOptionValue(ACKS, "0");
+            commandLineOpt.numberOfThreads = Integer.parseInt(commandLine.getOptionValue(NUMBER_OF_THREADS, "1"));
+            commandLineOpt.messageSendInterval = Long.parseLong(commandLine.getOptionValue(MESSAGE_SEND_INTERVAL, "-1"));
+            commandLineOpt.payloadType = PayloadType.of(commandLine.getOptionValue(PAYLOAD_TYPE, "uuid"));
         } catch (ParseException e) {
             LOGGER.error(e.toString());
         }
+        checkParameters(commandLineOpt);
         return commandLineOpt;
+    }
+
+    private static void checkParameters(CommandLineOpt commandLineOpt) {
+        if (null == commandLineOpt.getBootstrapServers()) {
+            LOGGER.error("Option bootstrap servers is required. Exit");
+            System.exit(-1);
+        }
+        if (null == commandLineOpt.getTopic()) {
+            LOGGER.error("Option topic is required. Exit");
+            System.exit(-1);
+        }
+
+        if (null == commandLineOpt.getPayloadType()) {
+            LOGGER.error("Payload type error. Exit");
+            System.exit(-1);
+        }
     }
 
     public Properties buildKafkaProperties() {
         Properties properties = new Properties();
         properties.put("bootstrap.servers", bootstrapServers);
         properties.put("acks", acks);
-        properties.put("retries", retries);
-        properties.put("batch.size", batchSize);
-        properties.put("linger.ms", lingerms);
-        if (bufferMemory > 0) {
-            properties.put("buffer.memory", bufferMemory);
-        }
         properties.put("key.serializer", keySerializer);
         properties.put("value.serializer", valueSerializer);
         return properties;
@@ -206,10 +163,6 @@ public class CommandLineOpt {
             "bootstrapServers='" + bootstrapServers + '\'' +
             ", topic='" + topic + '\'' +
             ", acks='" + acks + '\'' +
-            ", batchSize=" + batchSize +
-            ", lingerms=" + lingerms +
-            ", retries=" + retries +
-            ", bufferMemory=" + bufferMemory +
             ", keySerializer='" + keySerializer + '\'' +
             ", valueSerializer='" + valueSerializer + '\'' +
             ", numberOfThreads=" + numberOfThreads +
