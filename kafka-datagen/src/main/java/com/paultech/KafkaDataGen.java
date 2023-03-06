@@ -37,6 +37,7 @@ public class KafkaDataGen {
         }
 
         executorService.shutdown();
+        logInfo(commandLineOpt);
         try {
             if (!executorService.awaitTermination(RUNNING_DURATION_MINUTE, TimeUnit.MINUTES)) {
                 executorService.shutdownNow();
@@ -53,13 +54,16 @@ public class KafkaDataGen {
             Map<String, TopicDescription> topicDescriptionMap = adminClient.describeTopics(Collections.singletonList(topic)).all().get();
             if (topicDescriptionMap.containsKey(topic)) {
                 LOGGER.info("Topic \"{}\" already exists. Delete it first.", topic);
-                adminClient.deleteTopics(Collections.singletonList(topic));
+                adminClient.deleteTopics(Collections.singletonList(topic)).all().get();
             }
 
-            LOGGER.info("Create topic: {}", topic);
+            // Make sure the topic has been deleted
+            Thread.sleep(1000);
+            LOGGER.info("Create topic: {} with numOfPartitions: {}", topic, commandLineOpt.getNumberOfThreads());
             NewTopic newTopic = new NewTopic(topic, commandLineOpt.getNumberOfThreads(), (short) 1);
             adminClient.createTopics(Collections.singletonList(newTopic)).all().get();
         } catch (Exception e) {
+            e.printStackTrace();
             LOGGER.error("Create topic error. Topic name: {}", topic);
         }
     }
@@ -71,5 +75,17 @@ public class KafkaDataGen {
             producerThreadList.add(new ProducerThread(commandLineOpt));
         }
         return producerThreadList;
+    }
+
+    private static void logInfo(CommandLineOpt commandLineOpt) {
+        long messageSendInterval = commandLineOpt.getMessageSendInterval();
+        LOGGER.info("------ Flink Benchmark Data Generator ------");
+        LOGGER.info(" Kafka Topic: {}", commandLineOpt.getTopic());
+        LOGGER.info(" Number of Partitions: {}", commandLineOpt.getNumberOfThreads());
+        LOGGER.info(" Interval: {}", messageSendInterval);
+        LOGGER.info(" Payload: {}", commandLineOpt.getPayloadType());
+        if (messageSendInterval > 0) {
+            LOGGER.info(" Estimated speed: {} records/s", commandLineOpt.getNumberOfThreads() * 1000 / messageSendInterval);
+        }
     }
 }
