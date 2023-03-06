@@ -33,7 +33,7 @@ public class AnalyzerTask implements Runnable {
             ConsumerRecords<String, String> consumerRecords = kafkaConsumer.poll(100);
             for (ConsumerRecord<String, String> consumerRecord : consumerRecords) {
                 String value = consumerRecord.value();
-                LOGGER.info("Value: {}", value);
+//                LOGGER.info("Value: {}", value);
                 String[] split = value.split(" ");
                 long endTime = Long.parseLong(split[1]);
                 long startTime = Long.parseLong(split[0]);

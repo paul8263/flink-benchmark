@@ -1,14 +1,12 @@
 package com.paultech;
 
 import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.admin.DescribeTopicsResult;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.admin.TopicDescription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -84,9 +82,14 @@ public class KafkaDataGen {
     private static void logInfo(CommandLineOpt commandLineOpt) {
         long messageSendInterval = commandLineOpt.getMessageSendInterval();
         LOGGER.info("------ Flink Benchmark Data Generator ------");
+        LOGGER.info(" Bootstrap Servers: {}", commandLineOpt.getBootstrapServers());
         LOGGER.info(" Kafka Topic: {}", commandLineOpt.getTopic());
         LOGGER.info(" Number of Partitions: {}", commandLineOpt.getNumberOfThreads());
-        LOGGER.info(" Interval: {}", messageSendInterval);
+        if (messageSendInterval > 0) {
+            LOGGER.info(" Interval: {}ms", messageSendInterval);
+        } else {
+            LOGGER.info(" Interval: No Interval");
+        }
         LOGGER.info(" Payload: {}", commandLineOpt.getPayloadType());
         if (messageSendInterval > 0) {
             LOGGER.info(" Estimated speed: {} records/s", commandLineOpt.getNumberOfThreads() * 1000L / messageSendInterval);

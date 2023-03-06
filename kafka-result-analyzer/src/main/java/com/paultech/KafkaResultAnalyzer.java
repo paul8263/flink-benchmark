@@ -19,19 +19,20 @@ import java.util.stream.Collectors;
  */
 public class KafkaResultAnalyzer {
     private static final Logger LOGGER = LoggerFactory.getLogger(KafkaResultAnalyzer.class);
-    private static final Histogram histogram = new Histogram(new UniformReservoir());
+    private static final Histogram histogram = new Histogram(new UniformReservoir(1000000));
 
     public static void main(String[] args) {
         ResultCommandOpt resultCommandOpt = ResultCommandOpt.parseCommandLine(args);
         LOGGER.info(resultCommandOpt.toString());
 
-        int numberOfAnalyzer = getNumberOfAnalyzer(resultCommandOpt);
-        if (numberOfAnalyzer == 0) {
+        int numberOfAnalyzers = getNumberOfAnalyzers(resultCommandOpt);
+        if (numberOfAnalyzers == 0) {
             LOGGER.error("Cannot get number of partitions for topic: {}. Exit.", resultCommandOpt.getTopic());
+            System.exit(-1);
         }
 
-        ExecutorService executorService = Executors.newFixedThreadPool(numberOfAnalyzer);
-        List<AnalyzerTask> analyzerGroup = createAnalyzerGroup(resultCommandOpt, numberOfAnalyzer);
+        ExecutorService executorService = Executors.newFixedThreadPool(numberOfAnalyzers);
+        List<AnalyzerTask> analyzerGroup = createAnalyzerGroup(resultCommandOpt, numberOfAnalyzers);
 
         for (AnalyzerTask analyzerTask : analyzerGroup) {
             executorService.submit(analyzerTask);
@@ -39,6 +40,7 @@ public class KafkaResultAnalyzer {
 
         executorService.shutdown();
 
+        logInfo(resultCommandOpt, numberOfAnalyzers);
         try {
             if (!executorService.awaitTermination(1, TimeUnit.MINUTES)) {
                 closeAnalyzerGroup(analyzerGroup);
@@ -67,12 +69,20 @@ public class KafkaResultAnalyzer {
         }
     }
 
-    private static int getNumberOfAnalyzer(ResultCommandOpt resultCommandOpt) {
-        int numberOfAnalyzer = 0;
+    private static int getNumberOfAnalyzers(ResultCommandOpt resultCommandOpt) {
+        int numberOfAnalyzer;
         try (KafkaConsumer<String, String> kafkaConsumer = new KafkaConsumer<>(resultCommandOpt.buildKafkaProperties())) {
             numberOfAnalyzer = kafkaConsumer.partitionsFor(resultCommandOpt.getTopic()).size();
         }
         return numberOfAnalyzer;
+    }
+
+    private static void logInfo(ResultCommandOpt resultCommandOpt, int numOfPartitions) {
+        LOGGER.info("------ Kafka Result Analyzer ------");
+        LOGGER.info(" Bootstrap Servers: {}", resultCommandOpt.getBootstrapServers());
+        LOGGER.info(" Kafka Topic: {}", resultCommandOpt.getTopic());
+        LOGGER.info(" Number of Partitions: {}", numOfPartitions);
+        LOGGER.info(" Kafka Group ID: {}", resultCommandOpt.getGroupId());
     }
 
     private static void printReport(Snapshot snapshot, Long throughput) {
@@ -82,10 +92,10 @@ public class KafkaResultAnalyzer {
         LOGGER.info("95 Percentile: {}ms", snapshot.get95thPercentile());
         LOGGER.info("99 Percentile: {}ms", snapshot.get99thPercentile());
         LOGGER.info("999 Percentile: {}ms", snapshot.get999thPercentile());
-        LOGGER.info("Median: {}", snapshot.getMedian());
-        LOGGER.info("MAX: {}", snapshot.getMax());
-        LOGGER.info("MIN: {}", snapshot.getMin());
-        LOGGER.info("Throughput(records/s): {}", throughput);
+        LOGGER.info("Median: {}ms", snapshot.getMedian());
+        LOGGER.info("MAX: {}ms", snapshot.getMax());
+        LOGGER.info("MIN: {}ms", snapshot.getMin());
+        LOGGER.info("Throughput: {} records/s", throughput);
         LOGGER.info("---------------------------------------------------------");
     }
 }
