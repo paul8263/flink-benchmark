@@ -17,12 +17,13 @@ object KafkaUtil {
   def getKafkaSource(parameterTool: ParameterTool): FlinkKafkaConsumer[String] = {
     val bootstrapServer = parameterTool.get("bootstrap-server", "localhost:9092")
     val sourceKafkaTopic = parameterTool.get("input-topic", "input-topic")
-    val pollTimeout = parameterTool.get("flink.poll-timeout", "")
+    val consumerGroup = parameterTool.get("consumer-group", "flink-bench")
+
     val properties = new Properties()
     properties.setProperty("bootstrap.servers", bootstrapServer)
-    properties.setProperty("group.id", "flink-bench")
-    if (!"".equals(pollTimeout)) {
-      properties.setProperty("flink.poll-timeout", pollTimeout)
+    properties.setProperty("group.id", consumerGroup)
+    if (parameterTool.has("flink.poll-timeout")) {
+      properties.setProperty("flink.poll-timeout", parameterTool.get("flink.poll-timeout"))
     }
 
     new FlinkKafkaConsumer[String](sourceKafkaTopic, new SimpleStringSchema(), properties)

@@ -13,10 +13,12 @@ object Latency {
     val parameterTool = ParameterTool.fromArgs(args)
     val parallelism = parameterTool.getInt("parallelism", 12)
     env.setParallelism(parallelism)
+    if (parameterTool.has("bufferTimeout")) {
+      env.setBufferTimeout(parameterTool.getLong("bufferTimeout"));
+    }
 
     val kafkaSource = KafkaUtil.getKafkaSource(parameterTool)
     val kafkaSink = KafkaUtil.getKafkaSink(parameterTool)
-
     val dataStream = env.addSource(kafkaSource).name("kafka-source")
 
     dataStream.map(new MapFunction[String, String] {
@@ -29,6 +31,6 @@ object Latency {
     }).name("latency-map")
       .addSink(kafkaSink).name("kafka-sink")
 
-    env.execute("Latency Job")
+    env.execute("Latency and Throughput Job")
   }
 }

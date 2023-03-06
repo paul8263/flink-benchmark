@@ -16,26 +16,27 @@ object WindowThroughput {
 
     val parameterTool = ParameterTool.fromArgs(args)
     val parallelism = parameterTool.getInt("parallelism", 12)
-
     env.setParallelism(parallelism)
-
-    val datasource = KafkaUtil.getKafkaSource(parameterTool)
-
-    if (parameterTool.has("startFromEarliest")) {
-        datasource.setStartFromEarliest()
+    if (parameterTool.has("bufferTimeout")) {
+      env.setBufferTimeout(parameterTool.getLong("bufferTimeout"));
     }
 
-    val stream: DataStream[String] = env.addSource(datasource).name("kafka-source")
+    val kafkaSource = KafkaUtil.getKafkaSource(parameterTool)
+    val kafkaSink = KafkaUtil.getKafkaSink(parameterTool)
 
-    val sink = KafkaUtil.getKafkaSink(parameterTool)
+    if (parameterTool.has("startFromEarliest")) {
+        kafkaSource.setStartFromEarliest()
+    }
+
+    val stream: DataStream[String] = env.addSource(kafkaSource).name("kafka-source")
 
     stream.windowAll(TumblingProcessingTimeWindows.of(Time.minutes(1))).process(new ProcessAllWindowFunction[String, String, TimeWindow] {
       override def process(context: Context, elements: Iterable[String], out: Collector[String]): Unit = {
         out.collect(elements.size.toString)
       }
     }).name("throughput-map")
-      .addSink(sink).name("kafka-sink")
+      .addSink(kafkaSink).name("kafka-sink")
 
-    env.execute("Throughput identity Job")
+    env.execute("Window Throughput Job")
   }
 }

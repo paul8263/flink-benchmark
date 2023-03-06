@@ -81,12 +81,14 @@ The output is how many records in a 1-minute-long window that Flink is able to p
 ## Flink job command options
 
 * --parallelism: Parallelism for Flink Stream Execution Environment
+* --bufferTimeout: Flink buffer timeout
 * --input-topic: Kafka topic where Flink reads data
 * --output-topic: Kafka topic where Flink writes data
 * --bootstrap-server: Addresses and ports for kafka brokers
+* --consumer-group: Consumer group. Default is "flink-bench"
+* --startFromEarliest: Consume kafka topic from the earliest offset
 * --input: Input file path
 * --output: output file path
-* --startFromEarliest: Consume kafka topic from earliest offset
 
 Examples:
 
