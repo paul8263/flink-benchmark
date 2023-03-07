@@ -25,7 +25,7 @@ public class MetricsCollector implements Runnable {
             messagesInBytesAcc += messagesSendInBytes;
         }
 
-        LOGGER.info("Messages sent in count: {}messages", messagesCountAcc);
-        LOGGER.info("Messages sent in bytes: {}bytes", messagesInBytesAcc);
+        LOGGER.info("Messages sent in count: {} messages", messagesCountAcc);
+        LOGGER.info("Messages sent in bytes: {} bytes", messagesInBytesAcc);
     }
 }

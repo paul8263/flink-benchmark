@@ -45,6 +45,9 @@ public class KafkaMessageSender implements Runnable {
         long messagesSentInBytes = 0;
         String msg = System.currentTimeMillis() + " " + payloadGenerator.generatePayload();
         String key = String.valueOf(Utils.murmur2(msg.getBytes()));
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Message sent: {} . Thread: {}", msg, Thread.currentThread().getName());
+        }
         ProducerRecord<String, String> stringStringProducerRecord = new ProducerRecord<>(topic, key, msg);
         while (messageSent < messagesPerInterval) {
             kafkaProducer.send(stringStringProducerRecord);
