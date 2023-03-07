@@ -7,8 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -16,32 +16,28 @@ import java.util.concurrent.TimeUnit;
  */
 public class KafkaDataGen {
     private static final Logger LOGGER = LoggerFactory.getLogger(KafkaDataGen.class);
-    private static final int RUNNING_DURATION_MINUTE = 10;
 
-    public static void main(String[] args) {
+    public static final long RUNNING_DURATION_MS = 600000L;
+    public static void main(String[] args) throws InterruptedException {
         CommandLineOpt commandLineOpt = CommandLineOpt.parseCommandLine(args);
         LOGGER.info(commandLineOpt.toString());
 
 //        createTopic(commandLineOpt);
 
-        List<ProducerThread> producerThreadList = generateProducerThread(commandLineOpt);
-        ExecutorService executorService = Executors.newFixedThreadPool(commandLineOpt.getNumberOfThreads());
-        for (ProducerThread producerThread : producerThreadList) {
-            executorService.submit(producerThread);
+        ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(commandLineOpt.getNumberOfThreads());
+        List<KafkaMessageSender> kafkaMessageSenders = generateKafkaMessageSenders(commandLineOpt);
+        for (KafkaMessageSender kafkaMessageSender : kafkaMessageSenders) {
+            scheduledExecutorService.scheduleAtFixedRate(kafkaMessageSender, 0, commandLineOpt.getMessageSendInterval(), TimeUnit.MILLISECONDS);
         }
-
-        executorService.shutdown();
         logInfo(commandLineOpt);
-        try {
-            if (!executorService.awaitTermination(RUNNING_DURATION_MINUTE, TimeUnit.MINUTES)) {
-                closeProducerThread(producerThreadList);
-                Thread.sleep(30000);
-                executorService.shutdownNow();
-            }
-        } catch (InterruptedException e) {
-            LOGGER.error(e.toString());
-            executorService.shutdownNow();
+
+        Thread.sleep(RUNNING_DURATION_MS);
+
+        scheduledExecutorService.shutdown();
+        if (!scheduledExecutorService.awaitTermination(3000, TimeUnit.MILLISECONDS)) {
+            scheduledExecutorService.shutdownNow();
         }
+        closeKafkaMessageSenders(kafkaMessageSenders);
         LOGGER.info("Data Generator exited");
     }
     private static void createTopic(CommandLineOpt commandLineOpt) {
@@ -64,36 +60,33 @@ public class KafkaDataGen {
         }
     }
 
-    private static List<ProducerThread> generateProducerThread(CommandLineOpt commandLineOpt) {
+    private static List<KafkaMessageSender> generateKafkaMessageSenders(CommandLineOpt commandLineOpt) {
         int numberOfThreads = commandLineOpt.getNumberOfThreads();
-        List<ProducerThread> producerThreadList = new ArrayList<>(numberOfThreads);
+        List<KafkaMessageSender> kafkaMessageSenderList = new ArrayList<>(numberOfThreads);
         for (int i = 0; i < numberOfThreads; i++) {
-            producerThreadList.add(new ProducerThread(commandLineOpt));
+            kafkaMessageSenderList.add(new KafkaMessageSender(commandLineOpt));
         }
-        return producerThreadList;
+        return kafkaMessageSenderList;
     }
 
-    private static void closeProducerThread(List<ProducerThread> producerThreadList) {
-        for (ProducerThread producerThread : producerThreadList) {
-            producerThread.close();
+    private static void closeKafkaMessageSenders(List<KafkaMessageSender> kafkaMessageSenderList) {
+        for (KafkaMessageSender kafkaMessageSender : kafkaMessageSenderList) {
+            kafkaMessageSender.close();
         }
     }
 
     private static void logInfo(CommandLineOpt commandLineOpt) {
         long messageSendInterval = commandLineOpt.getMessageSendInterval();
+        int messagesPerInterval = commandLineOpt.getMessagesPerInterval();
         LOGGER.info("------ Flink Benchmark Data Generator ------");
         LOGGER.info(" Bootstrap Servers: {}", commandLineOpt.getBootstrapServers());
         LOGGER.info(" Kafka Topic: {}", commandLineOpt.getTopic());
         LOGGER.info(" Number of Partitions: {}", commandLineOpt.getNumberOfThreads());
-        if (messageSendInterval > 0) {
-            LOGGER.info(" Interval: {}ms", messageSendInterval);
-        } else {
-            LOGGER.info(" Interval: No Interval");
-        }
+        LOGGER.info(" Interval: {}ms", messageSendInterval);
+        LOGGER.info(" Messages per interval: {}", messagesPerInterval);
         LOGGER.info(" Payload: {}", commandLineOpt.getPayloadType());
-        if (messageSendInterval > 0) {
-            LOGGER.info(" Estimated speed: {} records/s", commandLineOpt.getNumberOfThreads() * 1000L / messageSendInterval);
-        }
-        LOGGER.info(" Data Generator will be running for {} minutes", RUNNING_DURATION_MINUTE);
+        LOGGER.info(" Estimated speed: {} records/s", commandLineOpt.getNumberOfThreads() * messagesPerInterval * 1000L / messageSendInterval);
+
+        LOGGER.info(" Data Generator will be running for {} ms", RUNNING_DURATION_MS);
     }
 }

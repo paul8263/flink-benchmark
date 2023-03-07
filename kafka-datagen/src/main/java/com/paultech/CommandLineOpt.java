@@ -4,7 +4,6 @@ import org.apache.commons.cli.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Optional;
 import java.util.Properties;
 
 public class CommandLineOpt {
@@ -16,6 +15,7 @@ public class CommandLineOpt {
     public static final String ACKS = "acks";
     public static final String NUMBER_OF_THREADS = "threads";
     public static final String MESSAGE_SEND_INTERVAL = "messageSendInterval";
+    private static final String MESSAGES_PER_INTERVAL = "messagesPerInterval";
     public static final String PAYLOAD_TYPE = "payloadType";
     public static final String HELP = "help";
 
@@ -29,6 +29,8 @@ public class CommandLineOpt {
     // Datagen properties
     private int numberOfThreads = 1;
     private long messageSendInterval = -1;
+
+    private int messagesPerInterval = 5;
 
     private PayloadType payloadType;
 
@@ -96,6 +98,14 @@ public class CommandLineOpt {
         this.payloadType = payloadType;
     }
 
+    public int getMessagesPerInterval() {
+        return messagesPerInterval;
+    }
+
+    public void setMessagesPerInterval(int messagesPerInterval) {
+        this.messagesPerInterval = messagesPerInterval;
+    }
+
     private static Options buildOptions() {
         Options options = new Options();
         options.addOption("b", BOOTSTRAP_SERVERS, true, "Bootstrap Servers");
@@ -103,6 +113,7 @@ public class CommandLineOpt {
         options.addOption("a", ACKS, true, "Acks");
         options.addOption("n", NUMBER_OF_THREADS, true, "Number of threads");
         options.addOption("i", MESSAGE_SEND_INTERVAL, true, "Message send interval");
+        options.addOption("c", MESSAGES_PER_INTERVAL, true, "Messages per interval");
         options.addOption("p", PAYLOAD_TYPE, true, "Kafka data payload type");
         options.addOption("h", HELP, false, "Get help message");
         return options;
@@ -123,10 +134,12 @@ public class CommandLineOpt {
             commandLineOpt.topic = commandLine.getOptionValue(TOPIC);
             commandLineOpt.acks = commandLine.getOptionValue(ACKS, "0");
             commandLineOpt.numberOfThreads = Integer.parseInt(commandLine.getOptionValue(NUMBER_OF_THREADS, "1"));
-            commandLineOpt.messageSendInterval = Long.parseLong(commandLine.getOptionValue(MESSAGE_SEND_INTERVAL, "-1"));
+            commandLineOpt.messageSendInterval = Long.parseLong(commandLine.getOptionValue(MESSAGE_SEND_INTERVAL, "10"));
             commandLineOpt.payloadType = PayloadType.of(commandLine.getOptionValue(PAYLOAD_TYPE, "uuid"));
+            commandLineOpt.messagesPerInterval = Integer.parseInt(commandLine.getOptionValue(MESSAGES_PER_INTERVAL, "5"));
         } catch (ParseException e) {
             LOGGER.error(e.toString());
+            System.exit(-1);
         }
         checkParameters(commandLineOpt);
         return commandLineOpt;
@@ -144,6 +157,11 @@ public class CommandLineOpt {
 
         if (null == commandLineOpt.getPayloadType()) {
             LOGGER.error("Payload type error. Exit");
+            System.exit(-1);
+        }
+
+        if (commandLineOpt.messageSendInterval <= 0) {
+            LOGGER.error("Messages send interval should be greater than 0. Exit");
             System.exit(-1);
         }
     }
@@ -167,7 +185,8 @@ public class CommandLineOpt {
             ", valueSerializer='" + valueSerializer + '\'' +
             ", numberOfThreads=" + numberOfThreads +
             ", messageSendInterval=" + messageSendInterval +
-            ", payloadType='" + payloadType + '\'' +
+            ", messagesPerInterval=" + messagesPerInterval +
+            ", payloadType=" + payloadType +
             '}';
     }
 }
