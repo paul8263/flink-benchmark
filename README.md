@@ -36,6 +36,7 @@ java -jar kafka-datasource-1.0.jar -t test_topic -b kafka01:6667,kafka02:6667,ka
 ```shell
 # Create topic with designated partitions
 ./kafka-topics.sh --create --zookeeper manager.bigdata:2181,master.bigdata:2181,worker.bigdata:2181 --replication-factor 1 --partitions 4 --topic output
+./kafka-topics.sh --create --zookeeper manager.bigdata:2181,master.bigdata:2181,worker.bigdata:2181 --replication-factor 1 --partitions 4 --topic input
 
 # Latency and Throughput benchmark
 ./bin/flink run -m yarn-cluster -c com.paultech.Latency /path/to/benchmark/benchmark-1.0.jar --parallelism 4 --output-topic output --input-topic input --bootstrap-server kafka01:6667,kafka02:6667,kafka03:6667

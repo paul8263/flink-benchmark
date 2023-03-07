@@ -22,7 +22,7 @@ public class KafkaDataGen {
         CommandLineOpt commandLineOpt = CommandLineOpt.parseCommandLine(args);
         LOGGER.info(commandLineOpt.toString());
 
-        createTopic(commandLineOpt);
+//        createTopic(commandLineOpt);
 
         List<ProducerThread> producerThreadList = generateProducerThread(commandLineOpt);
         ExecutorService executorService = Executors.newFixedThreadPool(commandLineOpt.getNumberOfThreads());
@@ -35,7 +35,7 @@ public class KafkaDataGen {
         try {
             if (!executorService.awaitTermination(RUNNING_DURATION_MINUTE, TimeUnit.MINUTES)) {
                 closeProducerThread(producerThreadList);
-                Thread.sleep(1500);
+                Thread.sleep(30000);
                 executorService.shutdownNow();
             }
         } catch (InterruptedException e) {

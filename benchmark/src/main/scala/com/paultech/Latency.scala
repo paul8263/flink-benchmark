@@ -18,6 +18,9 @@ object Latency {
     }
 
     val kafkaSource = KafkaUtil.getKafkaSource(parameterTool)
+    if (parameterTool.has("startFromEarliest")) {
+      kafkaSource.setStartFromEarliest()
+    }
     val kafkaSink = KafkaUtil.getKafkaSink(parameterTool)
     val dataStream = env.addSource(kafkaSource).name("kafka-source")
 
