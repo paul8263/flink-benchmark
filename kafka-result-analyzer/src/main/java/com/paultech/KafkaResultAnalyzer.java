@@ -43,6 +43,7 @@ public class KafkaResultAnalyzer {
         logInfo(resultCommandOpt, numberOfAnalyzers);
         try {
             if (!executorService.awaitTermination(1, TimeUnit.MINUTES)) {
+                LOGGER.info("Result analysis completed. Generating report.");
                 executorService.shutdownNow();
                 closeAnalyzerGroup(analyzerGroup);
             }
