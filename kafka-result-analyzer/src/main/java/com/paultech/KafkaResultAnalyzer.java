@@ -43,9 +43,8 @@ public class KafkaResultAnalyzer {
         logInfo(resultCommandOpt, numberOfAnalyzers);
         try {
             if (!executorService.awaitTermination(1, TimeUnit.MINUTES)) {
-                closeAnalyzerGroup(analyzerGroup);
-                Thread.sleep(30000);
                 executorService.shutdownNow();
+                closeAnalyzerGroup(analyzerGroup);
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
