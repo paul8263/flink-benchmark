@@ -46,11 +46,6 @@ Create input/output topic with designated number of partitions.
 ./kafka-topics.sh --create --zookeeper manager.bigdata:2181,master.bigdata:2181,worker.bigdata:2181 --replication-factor 1 --partitions 4 --topic input
 ```
 
-### 1. Start Kafka datagen
-
-```shell
-java -jar kafka-datasource-1.0.jar -t input -b kafka01:6667,kafka02:6667,kafka03:6667 -i 10 -c 100 -n 4
-```
 ### 2. Start Flink job
 
 ```shell
@@ -58,7 +53,13 @@ java -jar kafka-datasource-1.0.jar -t input -b kafka01:6667,kafka02:6667,kafka03
 ./bin/flink run -m yarn-cluster -c com.paultech.Latency /path/to/benchmark/benchmark-1.0.jar --parallelism 4 --output-topic output --input-topic input --bootstrap-server kafka01:6667,kafka02:6667,kafka03:6667
 ```
 
-### 3. Get result
+### 3. Start Kafka datagen
+
+```shell
+java -jar kafka-datasource-1.0.jar -t input -b kafka01:6667,kafka02:6667,kafka03:6667 -i 10 -c 100 -n 4
+```
+
+### 4. Get result
 
 Your need to run result analyzer to calculate the histogram of latency.
 
