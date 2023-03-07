@@ -127,7 +127,7 @@ public class CommandLineOpt {
             CommandLine commandLine = parser.parse(buildOptions, args);
             if (commandLine.hasOption("h")) {
                 HelpFormatter helpFormatter = new HelpFormatter();
-                helpFormatter.printHelp("-b -t -a -n -i -p", buildOptions);
+                helpFormatter.printHelp("-b -t -a -n -i -c -p", buildOptions);
                 System.exit(0);
             }
             commandLineOpt.bootstrapServers = commandLine.getOptionValue(BOOTSTRAP_SERVERS);

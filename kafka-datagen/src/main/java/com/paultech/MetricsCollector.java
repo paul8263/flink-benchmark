@@ -9,15 +9,14 @@ public class MetricsCollector implements Runnable {
     private static final Logger LOGGER = LoggerFactory.getLogger(MetricsCollector.class);
     private final List<KafkaMessageSender> kafkaMessageSenderList;
 
-    private long messagesInBytesAcc = 0;
-    private long messagesCountAcc = 0;
-
     public MetricsCollector(List<KafkaMessageSender> kafkaMessageSenderList) {
         this.kafkaMessageSenderList = kafkaMessageSenderList;
     }
 
     @Override
     public void run() {
+        long messagesInBytesAcc = 0;
+        long messagesCountAcc = 0;
         for (KafkaMessageSender kafkaMessageSender : kafkaMessageSenderList) {
             long messagesSentTotal = kafkaMessageSender.getMessagesSentTotal().get();
             long messagesSendInBytes = kafkaMessageSender.getMessagesSentInBytes().get();

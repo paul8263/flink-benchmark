@@ -113,6 +113,7 @@ Examples:
 * -a: Acks
 * -n: Number of threads
 * -i: Message send interval
+* -c: Messages send per interval
 * -p: Kafka data payload type. Can be uuid or 1kb
 * -h: Get help message
 
