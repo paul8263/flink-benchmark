@@ -18,7 +18,7 @@ public class KafkaDataGen {
     private static final Logger LOGGER = LoggerFactory.getLogger(KafkaDataGen.class);
 
     public static final long RUNNING_DURATION_MS = 600000L;
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
         CommandLineOpt commandLineOpt = CommandLineOpt.parseCommandLine(args);
         LOGGER.info(commandLineOpt.toString());
 
@@ -31,11 +31,18 @@ public class KafkaDataGen {
         }
         logInfo(commandLineOpt);
 
-        Thread.sleep(RUNNING_DURATION_MS);
-
-        scheduledExecutorService.shutdown();
-        if (!scheduledExecutorService.awaitTermination(3000, TimeUnit.MILLISECONDS)) {
-            scheduledExecutorService.shutdownNow();
+        ScheduledExecutorService metricsExecutorService = Executors.newScheduledThreadPool(1);
+        metricsExecutorService.scheduleAtFixedRate(new MetricsCollector(kafkaMessageSenders), 0, 10, TimeUnit.SECONDS);
+        try {
+            Thread.sleep(RUNNING_DURATION_MS);
+            scheduledExecutorService.shutdown();
+            metricsExecutorService.shutdown();
+            if (!scheduledExecutorService.awaitTermination(3000, TimeUnit.MILLISECONDS)) {
+                scheduledExecutorService.shutdownNow();
+                metricsExecutorService.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            LOGGER.error(e.getMessage());
         }
         closeKafkaMessageSenders(kafkaMessageSenders);
         LOGGER.info("Data Generator exited");
