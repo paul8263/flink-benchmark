@@ -28,7 +28,7 @@ The binary distribution locates in `benchmark-dist/target/dist/flink-benchmark`.
 
 Note: The number of partitions for both input/output Kafka topic should be equal to the number of threads for Kafka datagen and parallelisms for Flink benchmark job.
 
-Explanations of parameters are listed in [Command options](##Command options)
+Explanations of parameters are listed in [Command options](#command-options)
 
 ### 1. Create Kafka topic
 
