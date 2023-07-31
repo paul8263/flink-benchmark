@@ -14,12 +14,18 @@ import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTime
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WindowThroughput {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(WindowThroughput.class);
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
         ParameterTool parameterTool = ParameterTool.fromArgs(args);
+        LOGGER.info("Parameters: {}", parameterTool.toMap().toString());
+
         int parallelism = parameterTool.getInt("parallelism", 12);
         env.setParallelism(parallelism);
         if (parameterTool.has("bufferTimeout")) {
@@ -36,7 +42,9 @@ public class WindowThroughput {
             .process(new ProcessAllWindowFunction<String, String, TimeWindow>() {
                 @Override
                 public void process(ProcessAllWindowFunction<String, String, TimeWindow>.Context context, Iterable<String> elements, Collector<String> out) throws Exception {
-                    out.collect(String.valueOf(Iterables.size(elements)));
+                    String elementSize = String.valueOf(Iterables.size(elements));
+                    LOGGER.info("Element size: {}", elementSize);
+                    out.collect(elementSize);
                 }
             })
             .returns(Types.STRING).name("window-process")
