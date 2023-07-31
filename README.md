@@ -8,9 +8,9 @@ Paul Zhang
 
 # Environment Requirement
 
-* Flink 1.13.2
+* Flink 1.15.4
 * Hadoop Yarn cluster
-* Kafka 1.1.1
+* Kafka 1.x or above
 
 If you have deployed Flink/Kafka with different version, please update Flink/Kafka version properties in `pom.xml` before compilation.
 
@@ -106,9 +106,7 @@ The output is how many records in a 1-minute-long window that Flink is able to p
 * --output-topic: Kafka topic where Flink writes data
 * --bootstrap-server: Addresses and ports for kafka brokers
 * --consumer-group: Consumer group. Default is "flink-bench"
-* --startFromEarliest: Consume kafka topic from the earliest offset
-* --input: Input file path
-* --output: output file path
+* --offset: Consume kafka topic from earliest or latest offset.
 
 Examples:
 
@@ -119,8 +117,6 @@ Examples:
 # Run Latency
 ./bin/flink run -m 10.180.210.187:8081 -c com.paultech.Latency /root/zy/benchmark/benchmark-1.0.jar --parallelism 12 --output-topic output --input-topic input --bootstrap-server 10.180.210.187:6667,10.180.210.188:6667,10.180.210.189:6667
 
-# Run Word Count
-./bin/flink run -m 10.180.210.187:8081 -c com.paultech.WordCount /root/zy/benchmark/benchmark-1.0.jar --parallelism 12 --output hdfs:///output.txt --input hdfs:///input.txt
 ```
 
 ## Kafka datagen command options
