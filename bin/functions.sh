@@ -11,7 +11,7 @@ CURRENT_DIR=$(
 
 FLINK_JOB_JAR_PATH=`readlink -f ../$FLINK_JOB_JAR_NAME`
 KAFKA_DATAGEN_JAR_PATH=`readlink -f ../$KAFKA_DATAGEN_JAR_NAME`
-KAFKA_RESULT_ANALYZER_JAR_PATH=`readlink -f ../KAFKA_RESULT_ANALYZER_JAR_NAME`
+KAFKA_RESULT_ANALYZER_JAR_PATH=`readlink -f ../$KAFKA_RESULT_ANALYZER_JAR_NAME`
 
 welcome() {
   echo "=============================================="
