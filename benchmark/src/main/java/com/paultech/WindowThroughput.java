@@ -49,7 +49,8 @@ public class WindowThroughput {
             })
             .returns(Types.STRING).name("window-process")
             .sinkTo(kafkaSink)
-            .name("kafka-sink");
+            .name("kafka-sink")
+            .setParallelism(1);
 
         env.execute("Window Throughput Job");
     }
