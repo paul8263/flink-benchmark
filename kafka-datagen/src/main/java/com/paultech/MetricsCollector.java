@@ -7,6 +7,9 @@ import java.util.List;
 
 public class MetricsCollector implements Runnable {
     private static final Logger LOGGER = LoggerFactory.getLogger(MetricsCollector.class);
+
+    public static final long METRICS_COLLECTOR_INTERVAL_SEC = 10L;
+
     private final List<KafkaMessageSender> kafkaMessageSenderList;
 
     private static long messagesCountAcc = 0L;

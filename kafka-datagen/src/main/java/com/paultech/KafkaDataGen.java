@@ -1,8 +1,6 @@
 package com.paultech;
 
-import com.paultech.stopper.AfterTimePeriodStopper;
-import com.paultech.stopper.MessageCountStopper;
-import com.paultech.stopper.Stopper;
+import com.paultech.stopper.StopperBuilder;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.admin.TopicDescription;
@@ -20,7 +18,6 @@ import java.util.concurrent.TimeUnit;
 public class KafkaDataGen {
     private static final Logger LOGGER = LoggerFactory.getLogger(KafkaDataGen.class);
 
-    public static final long METRICS_COLLECTOR_INTERVAL_SEC = 10L;
     public static void main(String[] args) {
         CommandLineOpt commandLineOpt = CommandLineOpt.parseCommandLine(args);
         LOGGER.info(commandLineOpt.toString());
@@ -35,20 +32,14 @@ public class KafkaDataGen {
         logInfo(commandLineOpt);
 
         ScheduledExecutorService metricsExecutorService = Executors.newScheduledThreadPool(1);
-        metricsExecutorService.scheduleWithFixedDelay(new MetricsCollector(kafkaMessageSenders), 0, METRICS_COLLECTOR_INTERVAL_SEC, TimeUnit.SECONDS);
+        metricsExecutorService.scheduleWithFixedDelay(new MetricsCollector(kafkaMessageSenders), 0, MetricsCollector.METRICS_COLLECTOR_INTERVAL_SEC, TimeUnit.SECONDS);
 
-        Stopper stopper;
-        // If stopAfterMessageCount is set, use MessageCountStopper, otherwise use AfterTimePeriodStopper
-        if (commandLineOpt.getStopAfterMessageCount() != -1) {
-            stopper = new MessageCountStopper(commandLineOpt.getStopAfterMessageCount(), scheduledExecutorService, metricsExecutorService);
-        } else {
-            stopper = new AfterTimePeriodStopper(commandLineOpt.getStopAfterTimeSec(), scheduledExecutorService, metricsExecutorService);
-        }
-        stopper.stop();
+        StopperBuilder.build(commandLineOpt, scheduledExecutorService, metricsExecutorService).stop();
 
         closeKafkaMessageSenders(kafkaMessageSenders);
         LOGGER.info("Data Generator exited");
     }
+
     private static void createTopic(CommandLineOpt commandLineOpt) {
         Properties kafkaProperties = commandLineOpt.buildKafkaProperties();
         String topic = commandLineOpt.getTopic();

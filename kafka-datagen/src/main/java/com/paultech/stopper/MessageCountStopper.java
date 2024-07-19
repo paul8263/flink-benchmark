@@ -1,6 +1,5 @@
 package com.paultech.stopper;
 
-import com.paultech.KafkaDataGen;
 import com.paultech.MetricsCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +26,7 @@ public class MessageCountStopper implements Stopper {
             long messagesCountAcc = MetricsCollector.getMessagesCountAcc();
             while (messageCount < messagesCountAcc) {
                 LOGGER.info("Number of messages has been sent: {}. Target message count: {}.", messagesCountAcc, messageCount);
-                Thread.sleep(KafkaDataGen.METRICS_COLLECTOR_INTERVAL_SEC);
+                Thread.sleep(MetricsCollector.METRICS_COLLECTOR_INTERVAL_SEC);
                 messagesCountAcc = MetricsCollector.getMessagesCountAcc();
             }
             LOGGER.info("Number of messages sent has exceeded target message count. Stopping datagen");
