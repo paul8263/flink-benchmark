@@ -24,11 +24,7 @@ The binary distribution locates in `benchmark-dist/target/dist/flink-benchmark`.
 
 # Run benchmarks
 
-## Latency and Throughput
-
-Note: The number of partitions for both input/output Kafka topic should be equal to the number of threads for Kafka datagen and parallelisms for Flink benchmark job.
-
-Explanations of parameters are listed in [Command options](#command-options)
+## Latency benchmark
 
 ### 1. Create Kafka topic
 
@@ -56,7 +52,7 @@ Create input/output topic with designated number of partitions.
 ### 3. Start Kafka datagen
 
 ```shell
-java -jar kafka-datasource-1.0.jar -t input -b kafka01:6667,kafka02:6667,kafka03:6667 -i 10 -c 100 -n 4
+java -jar /path/to/benchmark/kafka-datagen-1.0.jar -t input -b kafka01:6667,kafka02:6667,kafka03:6667 -i 100 -c 5 -n 1
 ```
 
 ### 4. Get result
@@ -64,60 +60,59 @@ java -jar kafka-datasource-1.0.jar -t input -b kafka01:6667,kafka02:6667,kafka03
 Your need to run result analyzer to calculate the histogram of latency.
 
 ```shell script
-java -jar kafka-result-analyzer-1.0.jar -b kafka01:6667,kafka02:6667,kafka03:6667 -t output
+java -jar /path/to/benchmark/kafka-result-analyzer-1.0.jar -b kafka01:6667,kafka02:6667,kafka03:6667 -t output
 ```
 
 > Flink might need some time to consume all pending records, so you might need run result analyzer several times.
 
 ## Window throughput benchmark
 
+Note: The number of partitions for both input/output Kafka topic should be equal to the number of threads for Kafka datagen and parallelisms for Flink benchmark job.
+
+Explanations of parameters are listed in [Command options](#command-options)
+
 ### 1. Start Kafka datagen
 
 ```shell
-java -jar kafka-datasource-1.0.jar -t test_topic -b kafka01:6667,kafka02:6667,kafka03:6667 -a 0 -i 10 -n 4 -p uuid
+java -jar /path/to/benchmark/kafka-datagen-1.0.jar -t test_topic -b kafka01:6667,kafka02:6667,kafka03:6667 -a 0 -i 10 -n 4 -p uuid
 ```
-
-### 2. Start Flink Job
+## 2. Submit Flink Job
 
 ```shell
-# Window Throughput benchmark
-./bin/flink run -m yarn-cluster -c com.paultech.WindowThroughput /path/to/benchmark/benchmark-1.0.jar --parallelism 4 --output-topic output --input-topic input --bootstrap-server kafka01:6667,kafka02:6667,kafka03:6667
+# Benchmark Throughput
+./bin/flink run -m yarn-cluster -c com.paultech.WindowThroughput /path/to/benchmark/benchmark-1.0.jar --parallelism 12 --output-topic output --input-topic input --bootstrap-server kafka01:6667,kafka02:6667,kafka03:6667
 ```
 
-Data will be collected in 1-minute-window. 
+> **Note**: If we start Flink throughput test we should increase the memory size of both job manager and task manager, or use a smaller window size.
+> For example:
+> ```shell
+> ./yarn-session -jm 4096 -tm 20480 -s 1
+> ```
 
-### 3. Get result
+## 3. Get result
 
-Use the following command to retrieve the result from output topic:
+### Throughput benchmark
+
+Data will be collected in 1-minute-window. Use the following command to retrieve the output from output topic:
 
 ```shell
 ./kafka-console-consumer.sh --bootstrap-server kafka01:6667,kafka02:6667,kafka03:6667 --topic output
 ```
 
-The output is how many records in a 1-minute-long window that Flink is able to process.
+The output is how many records per minute the Flink is able to process.
 
 # Command options
 
 ## Flink job command options
 
 * --parallelism: Parallelism for Flink Stream Execution Environment
-* --bufferTimeout: Flink buffer timeout
 * --input-topic: Kafka topic where Flink reads data
 * --output-topic: Kafka topic where Flink writes data
 * --bootstrap-server: Addresses and ports for kafka brokers
-* --consumer-group: Consumer group. Default is "flink-bench"
-* --offset: Consume kafka topic from earliest or latest offset.
-
-Examples:
-
-```shell
-# Run Throughput
-./bin/flink run -m 10.180.210.187:8081 -c com.paultech.WindowThroughput /root/zy/benchmark/benchmark-1.0.jar --parallelism 12 --output-topic output --input-topic input --bootstrap-server 10.180.210.187:6667,10.180.210.188:6667,10.180.210.189:6667
-
-# Run Latency
-./bin/flink run -m 10.180.210.187:8081 -c com.paultech.Latency /root/zy/benchmark/benchmark-1.0.jar --parallelism 12 --output-topic output --input-topic input --bootstrap-server 10.180.210.187:6667,10.180.210.188:6667,10.180.210.189:6667
-
-```
+* --input: Input file path
+* --output: output file path
+* --offset: Consume kafka topic from latest offset or earliest offset. Valid options: latest, earliest
+* --windowSize: Window size
 
 ## Kafka datagen command options
 
@@ -126,14 +121,16 @@ Examples:
 * -a: Acks
 * -n: Number of threads
 * -i: Message send interval
-* -c: Messages send per interval
+* -c: Message count per batch
 * -p: Kafka data payload type. Can be uuid or 1kb
+* -s: Stop datagen after time in seconds
+* -m: Stop datagen after message count
 * -h: Get help message
 
 Examples:
 
 ```shell
-java -jar kafka-datasource-1.0-SNAPSHOT.jar -b 10.180.210.187:6667,10.180.210.188:6667,10.180.210.189:6667 -t input -a 0 -n 12
+java -jar kafka-datasource-1.0.jar -b kafka01:6667,kafka02:6667,kafka03:6667 -t input -a 0 -n 12
 ```
 
 ## Kafka latency analyzer command options
@@ -146,7 +143,7 @@ java -jar kafka-datasource-1.0-SNAPSHOT.jar -b 10.180.210.187:6667,10.180.210.18
 Examples:
 
 ```shell script
-java -jar kafka-latency-analyzer-1.0-SNAPSHOT.jar -b 10.180.210.187:6667,10.180.210.188:6667,10.180.210.189:6667 -t output1 -g analyzer
+java -jar kafka-latency-analyzer-1.0.jar -b kafka01:6667,kafka02:6667,kafka03:6667 -t output -g analyzer
 ```
 
 # Appendix

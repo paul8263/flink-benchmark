@@ -37,8 +37,10 @@ public class WindowThroughput {
 
         SingleOutputStreamOperator<String> stream = env.fromSource(kafkaSource, WatermarkStrategy.noWatermarks(), "kafka-source");
 
+        int windowSizeInSeconds = parameterTool.getInt("windowSize", 60);
+
         stream
-            .windowAll(TumblingProcessingTimeWindows.of(Time.minutes(1)))
+            .windowAll(TumblingProcessingTimeWindows.of(Time.seconds(windowSizeInSeconds)))
             .process(new ProcessAllWindowFunction<String, String, TimeWindow>() {
                 @Override
                 public void process(ProcessAllWindowFunction<String, String, TimeWindow>.Context context, Iterable<String> elements, Collector<String> out) throws Exception {

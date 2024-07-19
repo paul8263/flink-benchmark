@@ -15,7 +15,7 @@ public class CommandLineOpt {
     public static final String ACKS = "acks";
     public static final String NUMBER_OF_THREADS = "threads";
     public static final String MESSAGE_SEND_INTERVAL = "messageSendInterval";
-    public static final String MESSAGES_PER_INTERVAL = "messagesPerInterval";
+    public static final String MESSAGE_COUNT_PER_BATCH = "messageCountPerBatch";
     public static final String PAYLOAD_TYPE = "payloadType";
     public static final String STOP_AFTER_TIME_SEC = "stopAfterTime";
     public static final String STOP_AFTER_MESSAGE_COUNT = "stopAfterMessageCount";
@@ -32,7 +32,7 @@ public class CommandLineOpt {
     private int numberOfThreads = 1;
     private long messageSendInterval = -1;
 
-    private int messagesPerInterval = 5;
+    private int messageCountPerBatch = 5;
 
     private PayloadType payloadType;
 
@@ -104,12 +104,12 @@ public class CommandLineOpt {
         this.payloadType = payloadType;
     }
 
-    public int getMessagesPerInterval() {
-        return messagesPerInterval;
+    public int getMessageCountPerBatch() {
+        return messageCountPerBatch;
     }
 
-    public void setMessagesPerInterval(int messagesPerInterval) {
-        this.messagesPerInterval = messagesPerInterval;
+    public void setMessageCountPerBatch(int messageCountPerBatch) {
+        this.messageCountPerBatch = messageCountPerBatch;
     }
 
     public long getStopAfterTimeSec() {
@@ -135,7 +135,7 @@ public class CommandLineOpt {
         options.addOption("a", ACKS, true, "Acks");
         options.addOption("n", NUMBER_OF_THREADS, true, "Number of threads");
         options.addOption("i", MESSAGE_SEND_INTERVAL, true, "Message send interval");
-        options.addOption("c", MESSAGES_PER_INTERVAL, true, "Messages per interval");
+        options.addOption("c", MESSAGE_COUNT_PER_BATCH, true, "Message count per batch");
         options.addOption("p", PAYLOAD_TYPE, true, "Kafka data payload type");
         options.addOption("s", STOP_AFTER_TIME_SEC, true, "Stop after time in seconds");
         options.addOption("m", STOP_AFTER_MESSAGE_COUNT, true, "Stop after message count");
@@ -160,7 +160,7 @@ public class CommandLineOpt {
             commandLineOpt.numberOfThreads = Integer.parseInt(commandLine.getOptionValue(NUMBER_OF_THREADS, "1"));
             commandLineOpt.messageSendInterval = Long.parseLong(commandLine.getOptionValue(MESSAGE_SEND_INTERVAL, "10"));
             commandLineOpt.payloadType = PayloadType.of(commandLine.getOptionValue(PAYLOAD_TYPE, "uuid"));
-            commandLineOpt.messagesPerInterval = Integer.parseInt(commandLine.getOptionValue(MESSAGES_PER_INTERVAL, "5"));
+            commandLineOpt.messageCountPerBatch = Integer.parseInt(commandLine.getOptionValue(MESSAGE_COUNT_PER_BATCH, "5"));
             commandLineOpt.stopAfterTimeSec = Long.parseLong(commandLine.getOptionValue(STOP_AFTER_TIME_SEC, "-1"));
             commandLineOpt.stopAfterMessageCount = Long.parseLong(commandLine.getOptionValue(STOP_AFTER_MESSAGE_COUNT, "-1"));
         } catch (ParseException e) {
@@ -211,7 +211,7 @@ public class CommandLineOpt {
             ", valueSerializer='" + valueSerializer + '\'' +
             ", numberOfThreads=" + numberOfThreads +
             ", messageSendInterval=" + messageSendInterval +
-            ", messagesPerInterval=" + messagesPerInterval +
+            ", messageCountPerBatch=" + messageCountPerBatch +
             ", payloadType=" + payloadType +
             ", stopAfterTimeSec=" + stopAfterTimeSec +
             ", stopAfterMessageCount=" + stopAfterMessageCount +

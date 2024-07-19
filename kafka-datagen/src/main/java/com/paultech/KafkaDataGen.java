@@ -86,14 +86,14 @@ public class KafkaDataGen {
 
     private static void logInfo(CommandLineOpt commandLineOpt) {
         long messageSendInterval = commandLineOpt.getMessageSendInterval();
-        int messagesPerInterval = commandLineOpt.getMessagesPerInterval();
+        int messageCountPerBatch = commandLineOpt.getMessageCountPerBatch();
         LOGGER.info("------ Flink Benchmark Data Generator ------");
         LOGGER.info(" Bootstrap Servers: {}", commandLineOpt.getBootstrapServers());
         LOGGER.info(" Kafka Topic: {}", commandLineOpt.getTopic());
         LOGGER.info(" Number of Partitions: {}", commandLineOpt.getNumberOfThreads());
         LOGGER.info(" Interval: {}ms", messageSendInterval);
-        LOGGER.info(" Messages per interval: {}", messagesPerInterval);
+        LOGGER.info(" Message count per batch: {}", messageCountPerBatch);
         LOGGER.info(" Payload: {}", commandLineOpt.getPayloadType());
-        LOGGER.info(" Estimated speed: {} records/s", commandLineOpt.getNumberOfThreads() * messagesPerInterval * 1000L / messageSendInterval);
+        LOGGER.info(" Estimated speed: {} records/s", commandLineOpt.getNumberOfThreads() * messageCountPerBatch * 1000L / messageSendInterval);
     }
 }

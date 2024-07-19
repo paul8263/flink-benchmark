@@ -14,7 +14,7 @@ public class KafkaMessageSender implements Runnable {
     private static final Logger LOGGER = LoggerFactory.getLogger(KafkaMessageSender.class);
     private final KafkaProducer<String, String> kafkaProducer;
     private final String topic;
-    private final long messagesPerInterval;
+    private final long messageCountPerBatch;
     private final PayloadGenerator payloadGenerator;
 
     private final AtomicLong messagesSentTotal = new AtomicLong();
@@ -22,7 +22,7 @@ public class KafkaMessageSender implements Runnable {
     public KafkaMessageSender(CommandLineOpt commandLineOpt) {
         this.kafkaProducer = new KafkaProducer<>(commandLineOpt.buildKafkaProperties());
         this.topic = commandLineOpt.getTopic();
-        this.messagesPerInterval = commandLineOpt.getMessagesPerInterval();
+        this.messageCountPerBatch = commandLineOpt.getMessageCountPerBatch();
         this.payloadGenerator = PayloadGeneratorBuilder.build(commandLineOpt.getPayloadType());
     }
 
@@ -37,7 +37,7 @@ public class KafkaMessageSender implements Runnable {
     @Override
     public void run() {
         messagesSentInBytes.addAndGet(sendMessage());
-        messagesSentTotal.addAndGet(messagesPerInterval);
+        messagesSentTotal.addAndGet(messageCountPerBatch);
     }
 
     public long sendMessage() {
@@ -49,7 +49,7 @@ public class KafkaMessageSender implements Runnable {
             LOGGER.debug("Message sent: {} . Thread: {}", msg, Thread.currentThread().getName());
         }
         ProducerRecord<String, String> stringStringProducerRecord = new ProducerRecord<>(topic, key, msg);
-        while (messageSent < messagesPerInterval) {
+        while (messageSent < messageCountPerBatch) {
             kafkaProducer.send(stringStringProducerRecord);
             messageSent++;
             messagesSentInBytes += payloadGenerator.getPayloadSize();

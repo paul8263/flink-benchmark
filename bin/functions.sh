@@ -105,9 +105,10 @@ run_benchmark() {
     read -p "Input topic: " INPUT_TOPIC
     read -p "Output topic: " OUTPUT_TOPIC
     read -p "Parallelism: " PARALLELISM
+    read -p "Window size(seconds): " WINDOW_SIZE
 
     export HADOOP_CLASSPATH=`hadoop classpath`
-    ${FLINK_HOME}/bin/flink run -m yarn-cluster -d -c $FLINK_CLASS $FLINK_JOB_JAR_PATH --parallelism $PARALLELISM --input-topic $INPUT_TOPIC --output-topic $OUTPUT_TOPIC --bootstrap-server $BOOTSTRAP_SERVER
+    ${FLINK_HOME}/bin/flink run -m yarn-cluster -d -c $FLINK_CLASS $FLINK_JOB_JAR_PATH --parallelism $PARALLELISM --input-topic $INPUT_TOPIC --output-topic $OUTPUT_TOPIC --bootstrap-server $BOOTSTRAP_SERVER --windowSize ${WINDOW_SIZE:-60}
     ;;
   "2")
     FLINK_CLASS="com.paultech.Latency"
