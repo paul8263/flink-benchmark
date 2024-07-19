@@ -9,8 +9,19 @@ public class MetricsCollector implements Runnable {
     private static final Logger LOGGER = LoggerFactory.getLogger(MetricsCollector.class);
     private final List<KafkaMessageSender> kafkaMessageSenderList;
 
+    private static long messagesCountAcc = 0L;
+    private static long messagesInBytesAcc = 0L;
+
     public MetricsCollector(List<KafkaMessageSender> kafkaMessageSenderList) {
         this.kafkaMessageSenderList = kafkaMessageSenderList;
+    }
+
+    public static long getMessagesCountAcc() {
+        return messagesCountAcc;
+    }
+
+    public static long getMessagesInBytesAcc() {
+        return messagesInBytesAcc;
     }
 
     @Override
@@ -26,5 +37,8 @@ public class MetricsCollector implements Runnable {
 
         LOGGER.info("Messages sent in count: {} messages", messagesCountAcc);
         LOGGER.info("Messages sent in bytes: {} bytes", messagesInBytesAcc);
+
+        MetricsCollector.messagesCountAcc = messagesCountAcc;
+        MetricsCollector.messagesInBytesAcc = messagesInBytesAcc;
     }
 }

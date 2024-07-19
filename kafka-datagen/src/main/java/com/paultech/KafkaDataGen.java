@@ -1,5 +1,8 @@
 package com.paultech;
 
+import com.paultech.stopper.AfterTimePeriodStopper;
+import com.paultech.stopper.MessageCountStopper;
+import com.paultech.stopper.Stopper;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.admin.TopicDescription;
@@ -17,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 public class KafkaDataGen {
     private static final Logger LOGGER = LoggerFactory.getLogger(KafkaDataGen.class);
 
-    public static final long RUNNING_DURATION_MS = 600000L;
+    public static final long METRICS_COLLECTOR_INTERVAL_SEC = 10L;
     public static void main(String[] args) {
         CommandLineOpt commandLineOpt = CommandLineOpt.parseCommandLine(args);
         LOGGER.info(commandLineOpt.toString());
@@ -27,23 +30,22 @@ public class KafkaDataGen {
         ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(commandLineOpt.getNumberOfThreads());
         List<KafkaMessageSender> kafkaMessageSenders = generateKafkaMessageSenders(commandLineOpt);
         for (KafkaMessageSender kafkaMessageSender : kafkaMessageSenders) {
-            scheduledExecutorService.scheduleAtFixedRate(kafkaMessageSender, 0, commandLineOpt.getMessageSendInterval(), TimeUnit.MILLISECONDS);
+            scheduledExecutorService.scheduleWithFixedDelay(kafkaMessageSender, 0, commandLineOpt.getMessageSendInterval(), TimeUnit.MILLISECONDS);
         }
         logInfo(commandLineOpt);
 
         ScheduledExecutorService metricsExecutorService = Executors.newScheduledThreadPool(1);
-        metricsExecutorService.scheduleAtFixedRate(new MetricsCollector(kafkaMessageSenders), 0, 10, TimeUnit.SECONDS);
-        try {
-            Thread.sleep(RUNNING_DURATION_MS);
-            scheduledExecutorService.shutdown();
-            metricsExecutorService.shutdown();
-            if (!scheduledExecutorService.awaitTermination(3000, TimeUnit.MILLISECONDS)) {
-                scheduledExecutorService.shutdownNow();
-                metricsExecutorService.shutdownNow();
-            }
-        } catch (InterruptedException e) {
-            LOGGER.error(e.getMessage());
+        metricsExecutorService.scheduleWithFixedDelay(new MetricsCollector(kafkaMessageSenders), 0, METRICS_COLLECTOR_INTERVAL_SEC, TimeUnit.SECONDS);
+
+        Stopper stopper;
+        // If stopAfterMessageCount is set, use MessageCountStopper, otherwise use AfterTimePeriodStopper
+        if (commandLineOpt.getStopAfterMessageCount() != -1) {
+            stopper = new MessageCountStopper(commandLineOpt.getStopAfterMessageCount(), scheduledExecutorService, metricsExecutorService);
+        } else {
+            stopper = new AfterTimePeriodStopper(commandLineOpt.getStopAfterTimeSec(), scheduledExecutorService, metricsExecutorService);
         }
+        stopper.stop();
+
         closeKafkaMessageSenders(kafkaMessageSenders);
         LOGGER.info("Data Generator exited");
     }
@@ -93,7 +95,5 @@ public class KafkaDataGen {
         LOGGER.info(" Messages per interval: {}", messagesPerInterval);
         LOGGER.info(" Payload: {}", commandLineOpt.getPayloadType());
         LOGGER.info(" Estimated speed: {} records/s", commandLineOpt.getNumberOfThreads() * messagesPerInterval * 1000L / messageSendInterval);
-
-        LOGGER.info(" Data Generator will be running for {} ms", RUNNING_DURATION_MS);
     }
 }

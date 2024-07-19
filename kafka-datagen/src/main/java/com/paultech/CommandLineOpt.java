@@ -15,8 +15,10 @@ public class CommandLineOpt {
     public static final String ACKS = "acks";
     public static final String NUMBER_OF_THREADS = "threads";
     public static final String MESSAGE_SEND_INTERVAL = "messageSendInterval";
-    private static final String MESSAGES_PER_INTERVAL = "messagesPerInterval";
+    public static final String MESSAGES_PER_INTERVAL = "messagesPerInterval";
     public static final String PAYLOAD_TYPE = "payloadType";
+    public static final String STOP_AFTER_TIME_SEC = "stopAfterTime";
+    public static final String STOP_AFTER_MESSAGE_COUNT = "stopAfterMessageCount";
     public static final String HELP = "help";
 
     // Kafka properties
@@ -33,6 +35,10 @@ public class CommandLineOpt {
     private int messagesPerInterval = 5;
 
     private PayloadType payloadType;
+
+    private long stopAfterTimeSec = -1;
+
+    private long stopAfterMessageCount = -1;
 
     public String getBootstrapServers() {
         return bootstrapServers;
@@ -106,6 +112,22 @@ public class CommandLineOpt {
         this.messagesPerInterval = messagesPerInterval;
     }
 
+    public long getStopAfterTimeSec() {
+        return stopAfterTimeSec;
+    }
+
+    public void setStopAfterTimeSec(long stopAfterTimeSec) {
+        this.stopAfterTimeSec = stopAfterTimeSec;
+    }
+
+    public long getStopAfterMessageCount() {
+        return stopAfterMessageCount;
+    }
+
+    public void setStopAfterMessageCount(long stopAfterMessageCount) {
+        this.stopAfterMessageCount = stopAfterMessageCount;
+    }
+
     private static Options buildOptions() {
         Options options = new Options();
         options.addOption("b", BOOTSTRAP_SERVERS, true, "Bootstrap Servers");
@@ -115,6 +137,8 @@ public class CommandLineOpt {
         options.addOption("i", MESSAGE_SEND_INTERVAL, true, "Message send interval");
         options.addOption("c", MESSAGES_PER_INTERVAL, true, "Messages per interval");
         options.addOption("p", PAYLOAD_TYPE, true, "Kafka data payload type");
+        options.addOption("s", STOP_AFTER_TIME_SEC, true, "Stop after time in seconds");
+        options.addOption("m", STOP_AFTER_MESSAGE_COUNT, true, "Stop after message count");
         options.addOption("h", HELP, false, "Get help message");
         return options;
     }
@@ -137,6 +161,8 @@ public class CommandLineOpt {
             commandLineOpt.messageSendInterval = Long.parseLong(commandLine.getOptionValue(MESSAGE_SEND_INTERVAL, "10"));
             commandLineOpt.payloadType = PayloadType.of(commandLine.getOptionValue(PAYLOAD_TYPE, "uuid"));
             commandLineOpt.messagesPerInterval = Integer.parseInt(commandLine.getOptionValue(MESSAGES_PER_INTERVAL, "5"));
+            commandLineOpt.stopAfterTimeSec = Long.parseLong(commandLine.getOptionValue(STOP_AFTER_TIME_SEC, "-1"));
+            commandLineOpt.stopAfterMessageCount = Long.parseLong(commandLine.getOptionValue(STOP_AFTER_MESSAGE_COUNT, "-1"));
         } catch (ParseException e) {
             LOGGER.error(e.toString());
             System.exit(-1);
@@ -187,6 +213,8 @@ public class CommandLineOpt {
             ", messageSendInterval=" + messageSendInterval +
             ", messagesPerInterval=" + messagesPerInterval +
             ", payloadType=" + payloadType +
+            ", stopAfterTimeSec=" + stopAfterTimeSec +
+            ", stopAfterMessageCount=" + stopAfterMessageCount +
             '}';
     }
 }
