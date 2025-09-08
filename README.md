@@ -8,7 +8,7 @@ Paul Zhang
 
 # Environment Requirement
 
-* Flink 1.15.4
+* Flink 1.17.2
 * Hadoop Yarn cluster
 * Kafka 1.x or above
 
