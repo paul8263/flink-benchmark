@@ -46,13 +46,13 @@ Create input/output topic with designated number of partitions.
 
 ```shell
 # Latency and Throughput benchmark
-./bin/flink run -m yarn-cluster -c com.paultech.Latency /path/to/benchmark/benchmark-1.0.jar --parallelism 4 --output-topic output --input-topic input --bootstrap-server kafka01:6667,kafka02:6667,kafka03:6667
+./bin/flink run -m yarn-cluster -c com.paultech.Latency /path/to/benchmark/benchmark-1.2.0.jar --parallelism 4 --output-topic output --input-topic input --bootstrap-server kafka01:6667,kafka02:6667,kafka03:6667
 ```
 
 ### 3. Start Kafka datagen
 
 ```shell
-java -jar /path/to/benchmark/kafka-datagen-1.0.jar -t input -b kafka01:6667,kafka02:6667,kafka03:6667 -i 100 -c 5 -n 1
+java -jar /path/to/benchmark/kafka-datagen-1.2.0.jar -t input -b kafka01:6667,kafka02:6667,kafka03:6667 -i 100 -c 5 -n 1
 ```
 
 ### 4. Get result
@@ -60,7 +60,7 @@ java -jar /path/to/benchmark/kafka-datagen-1.0.jar -t input -b kafka01:6667,kafk
 Your need to run result analyzer to calculate the histogram of latency.
 
 ```shell script
-java -jar /path/to/benchmark/kafka-result-analyzer-1.0.jar -b kafka01:6667,kafka02:6667,kafka03:6667 -t output
+java -jar /path/to/benchmark/kafka-result-analyzer-1.2.0.jar -b kafka01:6667,kafka02:6667,kafka03:6667 -t output
 ```
 
 > Flink might need some time to consume all pending records, so you might need run result analyzer several times.
@@ -74,13 +74,13 @@ Explanations of parameters are listed in [Command options](#command-options)
 ### 1. Start Kafka datagen
 
 ```shell
-java -jar /path/to/benchmark/kafka-datagen-1.0.jar -t test_topic -b kafka01:6667,kafka02:6667,kafka03:6667 -a 0 -i 10 -n 4 -p uuid
+java -jar /path/to/benchmark/kafka-datagen-1.2.0.jar -t test_topic -b kafka01:6667,kafka02:6667,kafka03:6667 -a 0 -i 10 -n 4 -p uuid
 ```
 ## 2. Submit Flink Job
 
 ```shell
 # Benchmark Throughput
-./bin/flink run -m yarn-cluster -c com.paultech.WindowThroughput /path/to/benchmark/benchmark-1.0.jar --parallelism 12 --output-topic output --input-topic input --bootstrap-server kafka01:6667,kafka02:6667,kafka03:6667
+./bin/flink run -m yarn-cluster -c com.paultech.WindowThroughput /path/to/benchmark/benchmark-1.2.0.jar --parallelism 12 --output-topic output --input-topic input --bootstrap-server kafka01:6667,kafka02:6667,kafka03:6667
 ```
 
 > **Note**: If we start Flink throughput test we should increase the memory size of both job manager and task manager, or use a smaller window size.
@@ -130,7 +130,7 @@ The output is how many records per minute the Flink is able to process.
 Examples:
 
 ```shell
-java -jar kafka-datasource-1.0.jar -b kafka01:6667,kafka02:6667,kafka03:6667 -t input -a 0 -n 12
+java -jar kafka-datasource-1.2.0.jar -b kafka01:6667,kafka02:6667,kafka03:6667 -t input -a 0 -n 12
 ```
 
 ## Kafka latency analyzer command options
@@ -143,7 +143,7 @@ java -jar kafka-datasource-1.0.jar -b kafka01:6667,kafka02:6667,kafka03:6667 -t 
 Examples:
 
 ```shell script
-java -jar kafka-latency-analyzer-1.0.jar -b kafka01:6667,kafka02:6667,kafka03:6667 -t output -g analyzer
+java -jar kafka-latency-analyzer-1.2.0.jar -b kafka01:6667,kafka02:6667,kafka03:6667 -t output -g analyzer
 ```
 
 # Appendix
