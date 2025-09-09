@@ -76,7 +76,7 @@ Explanations of parameters are listed in [Command options](#command-options)
 ```shell
 java -jar /path/to/benchmark/kafka-datagen-1.2.0.jar -t test_topic -b kafka01:6667,kafka02:6667,kafka03:6667 -a 0 -i 10 -n 4 -p uuid
 ```
-## 2. Submit Flink Job
+### 2. Submit Flink Job
 
 ```shell
 # Benchmark Throughput
@@ -89,9 +89,8 @@ java -jar /path/to/benchmark/kafka-datagen-1.2.0.jar -t test_topic -b kafka01:66
 > ./yarn-session -jm 4096 -tm 20480 -s 1
 > ```
 
-## 3. Get result
+### 3. Get result
 
-### Throughput benchmark
 
 Data will be collected in 1-minute-window. Use the following command to retrieve the output from output topic:
 
